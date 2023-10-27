@@ -2,4 +2,7 @@
 
 Minesweeper game = new Minesweeper();
 
-game.Start();
+while (true)
+{
+    game.Start();
+}
