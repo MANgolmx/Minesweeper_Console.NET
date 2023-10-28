@@ -12,7 +12,7 @@ namespace Minesweeper_Console.NET
         private NetworkManager networkManager;
         private Thread dataReciever;
 
-        private bool canStart = false;
+        private bool canStartFlag = false;
         private bool mapCreatedFlag = false;
 
         private bool enemyWon = false;
@@ -41,7 +41,8 @@ namespace Minesweeper_Console.NET
                 case 1:
                     ConnectToRoom();
                     break;
-
+                case -1:
+                    return;
             }
 
         }
@@ -71,7 +72,7 @@ namespace Minesweeper_Console.NET
 
             Console.WriteLine("Waiting for the other player to get ready...");
 
-            while (!canStart)
+            while (!canStartFlag)
             {
                 ;
             }
@@ -124,7 +125,7 @@ namespace Minesweeper_Console.NET
 
             Console.WriteLine("Waiting for the host to get ready...");
 
-            while (!canStart)
+            while (!canStartFlag)
             {
                 ;
             }
@@ -266,7 +267,7 @@ namespace Minesweeper_Console.NET
                                             Console.ForegroundColor = ConsoleColor.DarkRed;
                                             if (cursorPosition.X == i && cursorPosition.Y == j)
                                                 Console.BackgroundColor = ConsoleColor.DarkGray;
-                                            Console.Write("4");
+                                            Console.Write("8");
                                             break;
                                         default:
                                             Console.Write(" ");
@@ -661,7 +662,7 @@ namespace Minesweeper_Console.NET
                 networkManager.readyToPlay = true;
             }
             else if (data.Contains("CAN_START"))
-                canStart = true;
+                canStartFlag = true;
             else if (data.Contains("CREATE_MAP"))
             {
                 data = data.Replace("CREATE_MAP ", "");
@@ -739,6 +740,8 @@ namespace Minesweeper_Console.NET
                     Console.Write("---> ");
                 Console.Write("Connect to a room\n");
 
+                Console.Write("\nRules: You compete with the other player on the map with the same mines count.\n");
+
                 ConsoleKeyInfo pressedKey = Console.ReadKey();
                 switch (pressedKey.Key)
                 {
@@ -752,6 +755,8 @@ namespace Minesweeper_Console.NET
                         if (choice > 0)
                             choice--;
                         break;
+                    case ConsoleKey.Escape:
+                        return -1;
                 }
             }
         }

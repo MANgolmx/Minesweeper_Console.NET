@@ -153,7 +153,7 @@ namespace Minesweeper_Console.NET
                                     Console.ForegroundColor = ConsoleColor.DarkRed;
                                     if (cursorPosition.X == i && cursorPosition.Y == j)
                                         Console.BackgroundColor = ConsoleColor.DarkGray;
-                                    Console.Write("4");
+                                    Console.Write("8");
                                     break;
                                 default:
                                     Console.Write(" ");
