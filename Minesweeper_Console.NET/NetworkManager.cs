@@ -14,6 +14,8 @@ namespace Minesweeper_Console.NET
         public Client client;
         public Server server;
 
+        public bool readyToPlay = false;
+
         public NetworkManager() 
         { 
             client = new Client();
@@ -29,7 +31,6 @@ namespace Minesweeper_Console.NET
 
         public void StartReceivingData(MultiplayerGame session)
         {
-
             while (true)
             {
                 NetworkStream nwStream = server.tcpClient.GetStream();

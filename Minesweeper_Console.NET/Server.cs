@@ -29,8 +29,6 @@ namespace Minesweeper_Console.NET
             string res;
             string[] ip = serverIP.ToString().Split('.');
             
-            Console.WriteLine(serverIP.ToString());
-            Console.ReadKey();
             res = int.Parse(ip[0]).ToString("X") + int.Parse(ip[1]).ToString("X") + int.Parse(ip[2]).ToString("X") + 
                 int.Parse(ip[3]).ToString("X") + port.ToString("X") + int.Parse(ip[0]).ToString("X").Count() +
                 int.Parse(ip[1]).ToString("X").Count() + int.Parse(ip[2]).ToString("X").Count() + int.Parse(ip[3]).ToString("X").Count();
@@ -91,7 +89,7 @@ namespace Minesweeper_Console.NET
                     {
                         if (endPoint.Port == port)
                         {
-                            isAvailable = true;
+                            isAvailable = false;
                             break;
                         }
                     }

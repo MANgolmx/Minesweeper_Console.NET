@@ -48,17 +48,24 @@ namespace Minesweeper_Console.NET
 
             string hexIP = networkManager.server.GetHexIPAddress();
             Console.WriteLine("Room code: " + hexIP);
-            Console.WriteLine("Waiting for the other player!");
+            Console.WriteLine("Waiting for the other player to connect!");
 
             networkManager.server.StartListening();
-
-            Console.WriteLine("Client connected! Press any key when ready!");
-            Console.ReadLine();
 
             dataReciever = new Thread(() => networkManager.StartReceivingData(this));
             dataReciever.Start();
 
+            while (!networkManager.readyToPlay)
+            {
+                ;
+            }
+
+            Console.WriteLine("Player connected! Press any key when ready!");
+            Console.ReadKey();
+
             networkManager.SendData("CAN_START");
+
+            Console.WriteLine("Waiting for the other player to get ready...");
 
             while (!canStart)
             {
@@ -80,12 +87,18 @@ namespace Minesweeper_Console.NET
             networkManager.client.SetClientIP(hexCode);
             networkManager.client.TryConnecting();
 
-            Console.WriteLine("Connected to room! Press any key when ready!");
+            networkManager.SendData(networkManager.server.GetHexIPAddress());
+            networkManager.server.StartListening();
 
             dataReciever = new Thread(() => networkManager.StartReceivingData(this));
             dataReciever.Start();
 
+            Console.WriteLine("Connected to room! Press any key when ready!");
+            Console.ReadKey();
+            
             networkManager.SendData("CAN_START");
+
+            Console.WriteLine("Waiting for the other player to get ready...");
 
             while(!canStart)
             {

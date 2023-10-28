@@ -43,14 +43,14 @@ namespace Minesweeper_Console.NET
                             int.Parse(roomCode[roomCode.Length - 3].ToString()),
                             int.Parse(roomCode[roomCode.Length - 4].ToString()) };
 
-                string ipAddress = Convert.ToInt32(roomCode.Take(new Range(0, index[3])).ToString(), 16).ToString() + "." +
-                    Convert.ToInt32(roomCode.Take(new Range(index[3], index[2])).ToString(), 16).ToString() + "." +
-                    Convert.ToInt32(roomCode.Take(new Range(index[2], index[1])).ToString(), 16).ToString() + "." +
-                    Convert.ToInt32(roomCode.Take(new Range(index[1], index[0])).ToString(), 16).ToString() + ".";
+                string ipAddress = Convert.ToInt32(new string(roomCode.Take(new Range(0, index[3])).ToArray()), 16).ToString() + "." +
+                    Convert.ToInt32(new string(roomCode.Take(new Range(index[3], index[3] + index[2])).ToArray()), 16).ToString() + "." +
+                    Convert.ToInt32(new string(roomCode.Take(new Range(index[3] + index[2], index[3] + index[2] + index[1])).ToArray()), 16).ToString() + "." +
+                    Convert.ToInt32(new string(roomCode.Take(new Range(index[3] + index[2] + index[1], index[3] + index[2] + index[1] + index[0])).ToArray()), 16).ToString();
 
                 address = IPAddress.Parse(ipAddress);
 
-                port = Convert.ToInt32(roomCode.Take(new Range(roomCode.Length - 8, roomCode.Length - 4)).ToString(), 16);
+                port = Convert.ToInt32(new string(roomCode.Take(new Range(roomCode.Length - 8, roomCode.Length - 4)).ToArray()), 16);
 
                 serverIP = address;
                 this.port = port;
