@@ -310,7 +310,7 @@ namespace Minesweeper_Console.NET
                 map[(int)pos.X, (int)pos.Y].isOpened = true;
 
             if (pos.X > 0) OpenCells(new Vector2(pos.X - 1, pos.Y));
-            if (pos.X < mapSize.Y - 1) OpenCells(new Vector2(pos.X + 1, pos.Y));
+            if (pos.X < mapSize.X - 1) OpenCells(new Vector2(pos.X + 1, pos.Y));
             if (pos.Y > 0) OpenCells(new Vector2(pos.X, pos.Y - 1));
             if (pos.Y < mapSize.Y - 1) OpenCells(new Vector2(pos.X, pos.Y + 1));
         }

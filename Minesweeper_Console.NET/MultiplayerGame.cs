@@ -15,6 +15,9 @@ namespace Minesweeper_Console.NET
         private bool canStart = false;
         private bool mapCreatedFlag = false;
 
+        private bool enemyWon = false;
+        private bool enemyLost = false;
+
         private Vector2 mapSize;
         private int mineCount;
         private Cell[,] map;
@@ -353,6 +356,17 @@ namespace Minesweeper_Console.NET
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write("\n");
             }
+            if (enemyWon)
+            {
+                for (int i = 0; i < mapSize.Y + 5; i++)
+                    Console.Write(" ");
+                Console.Write("Player Won!");
+            } else if (enemyLost)
+            {
+                for (int i = 0; i < mapSize.Y + 5; i++)
+                    Console.Write(" ");
+                Console.Write("Player Lost!");
+            }
         }
 
         private int InputManager(bool firstInput = false)
@@ -478,7 +492,7 @@ namespace Minesweeper_Console.NET
                 map[(int)pos.X, (int)pos.Y].isOpened = true;
 
             if (pos.X > 0) OpenCells(new Vector2(pos.X - 1, pos.Y));
-            if (pos.X < mapSize.Y - 1) OpenCells(new Vector2(pos.X + 1, pos.Y));
+            if (pos.X < mapSize.X - 1) OpenCells(new Vector2(pos.X + 1, pos.Y));
             if (pos.Y > 0) OpenCells(new Vector2(pos.X, pos.Y - 1));
             if (pos.Y < mapSize.Y - 1) OpenCells(new Vector2(pos.X, pos.Y + 1));
         }
@@ -500,7 +514,7 @@ namespace Minesweeper_Console.NET
                 mapEnemy[(int)pos.X, (int)pos.Y].isOpened = true;
 
             if (pos.X > 0) OpenEnemyCells(new Vector2(pos.X - 1, pos.Y));
-            if (pos.X < mapSize.Y - 1) OpenEnemyCells(new Vector2(pos.X + 1, pos.Y));
+            if (pos.X < mapSize.X - 1) OpenEnemyCells(new Vector2(pos.X + 1, pos.Y));
             if (pos.Y > 0) OpenEnemyCells(new Vector2(pos.X, pos.Y - 1));
             if (pos.Y < mapSize.Y - 1) OpenEnemyCells(new Vector2(pos.X, pos.Y + 1));
         }
@@ -670,6 +684,10 @@ namespace Minesweeper_Console.NET
                 string[] tokens = data.Split();
                 OpenEnemyCells(new Vector2(int.Parse(tokens[1]), int.Parse(tokens[2])));
             }
+            else if (data.Contains("ENEMY_WON"))
+                enemyWon = true;
+            else if (data.Contains("ENEMY_LOST"))
+                enemyLost = false;
         }
 
         private void CreateMap()

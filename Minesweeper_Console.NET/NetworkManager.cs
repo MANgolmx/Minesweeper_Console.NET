@@ -31,7 +31,7 @@ namespace Minesweeper_Console.NET
 
         public void StartReceivingData(MultiplayerGame session)
         {
-            while (true)
+            while (server.tcpClient.Connected)
             {
                 NetworkStream nwStream = server.tcpClient.GetStream();
                 byte[] buffer = new byte[server.tcpClient.ReceiveBufferSize];
@@ -43,6 +43,7 @@ namespace Minesweeper_Console.NET
                     session.AbortRecieverThread();
                 else session.HandleRecievedData(dataReceived);
             }
+            session.AbortRecieverThread();
         }
 
     }
