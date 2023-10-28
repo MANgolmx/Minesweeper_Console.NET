@@ -10,11 +10,13 @@ namespace Minesweeper_Console.NET
     {
         SingleGame singleGame;
         MultiplayerGame multiplayerGame;
+        TrustGame trustGame;
 
         public Minesweeper()
         {
             //singleGame = new SingleGame();
             //multiplayerGame = new MultiplayerGame();
+            //trustGame = new TrustGame();
         }
 
         private int MainMenu()
@@ -63,7 +65,8 @@ namespace Minesweeper_Console.NET
                     multiplayerGame.StartGame();
                     break;
                 case 2:
-
+                    trustGame = new TrustGame();
+                    trustGame.StartGame();
                     break;
 
             }

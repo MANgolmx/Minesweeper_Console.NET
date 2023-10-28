@@ -64,5 +64,33 @@ namespace Minesweeper_Console.NET
             session.AbortRecieverThread();
         }
 
+        public void StartReceivingData(TrustGame session)
+        {
+            while (server.tcpClient.Connected)
+            {
+                try
+                {
+                    NetworkStream nwStream = server.tcpClient.GetStream();
+                    byte[] buffer = new byte[server.tcpClient.ReceiveBufferSize];
+                    int bytesRead = nwStream.Read(buffer, 0, server.tcpClient.ReceiveBufferSize);
+                    string dataReceived = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                    dataReceived = dataReceived.ToUpper();
+
+                    if (dataReceived == "END")
+                        session.AbortRecieverThread();
+                    else session.HandleRecievedData(dataReceived);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    Console.ReadKey();
+                    session.AbortRecieverThread();
+                }
+            }
+            Console.WriteLine("Player disconnected!");
+            Console.ReadKey();
+            session.AbortRecieverThread();
+        }
+
     }
 }

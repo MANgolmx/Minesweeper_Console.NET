@@ -14,12 +14,15 @@ namespace Minesweeper_Console.NET
         public bool isFlagged;
         public bool isUndefined;
 
+        public bool isTrap;
+
         public Cell()
         {
             isOpened = false;
             isMine = false;
             isFlagged = false;
             isUndefined = false;
+            isTrap = false;
         }
 
     }
