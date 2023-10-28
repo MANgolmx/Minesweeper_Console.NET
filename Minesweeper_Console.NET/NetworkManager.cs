@@ -20,38 +20,29 @@ namespace Minesweeper_Console.NET
             server = new Server();
         }
 
-        public void SetClientIP(string roomCode)
+        public void SendData(string dataToSend)
         {
-            IPAddress address;
-            int port;
-
-            try
-            {
-                int[] index = { int.Parse(roomCode[roomCode.Length - 1].ToString()),
-                            int.Parse(roomCode[roomCode.Length - 2].ToString()),
-                            int.Parse(roomCode[roomCode.Length - 3].ToString()),
-                            int.Parse(roomCode[roomCode.Length - 4].ToString()) };
-
-                string ipAddress = Convert.ToInt32(roomCode.Take(new Range(0, index[3])).ToString(), 16).ToString() + "." +
-                    Convert.ToInt32(roomCode.Take(new Range(index[3], index[2])).ToString(), 16).ToString() + "." +
-                    Convert.ToInt32(roomCode.Take(new Range(index[2], index[1])).ToString(), 16).ToString() + "." +
-                    Convert.ToInt32(roomCode.Take(new Range(index[1], index[0])).ToString(), 16).ToString() + ".";
-
-                address = IPAddress.Parse(ipAddress);
-
-                port = Convert.ToInt32(roomCode.Take(new Range(roomCode.Length - 8, roomCode.Length - 4)).ToString(), 16);
-
-                client.serverIP = address;
-                client.port = port;
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine("\nSomething went wrong!\n" + ex.ToString());
-            }
+            NetworkStream nwStream = client.tcpClient.GetStream();
+            byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(dataToSend);
+            nwStream.Write(bytesToSend, 0, bytesToSend.Length);
         }
 
+        public void StartReceivingData(MultiplayerGame session)
+        {
 
+            while (true)
+            {
+                NetworkStream nwStream = server.tcpClient.GetStream();
+                byte[] buffer = new byte[server.tcpClient.ReceiveBufferSize];
+                int bytesRead = nwStream.Read(buffer, 0, server.tcpClient.ReceiveBufferSize);
+                string dataReceived = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                dataReceived = dataReceived.ToUpper();
 
+                if (dataReceived == "END")
+                    session.AbortRecieverThread();
+                else session.HandleRecievedData(dataReceived);
+            }
+        }
 
     }
 }

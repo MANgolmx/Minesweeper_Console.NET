@@ -16,8 +16,7 @@ namespace Minesweeper_Console.NET
 
         private TcpListener listener;
 
-        private TcpClient client;
-        private NetworkStream nwStream;
+        public TcpClient tcpClient;
 
         public Server()
         {
@@ -43,7 +42,7 @@ namespace Minesweeper_Console.NET
         {
             listener.Start();
 
-            client = listener.AcceptTcpClient();
+            tcpClient = listener.AcceptTcpClient();
         }
 
         private void SetTCPListener()

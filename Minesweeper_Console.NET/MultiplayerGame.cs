@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,7 +9,19 @@ namespace Minesweeper_Console.NET
 {
     class MultiplayerGame
     {
-        NetworkManager networkManager;
+        private NetworkManager networkManager;
+        private Thread dataReciever;
+
+        private bool canStart = false;
+
+
+        private Vector2 mapSize;
+        private int mineCount;
+        private Cell[,] map;
+        private Cell[,] mapEnemy;
+
+        private Vector2 cursorPosition;
+
         public MultiplayerGame()
         {
             networkManager = new NetworkManager();
@@ -35,9 +48,24 @@ namespace Minesweeper_Console.NET
 
             string hexIP = networkManager.server.GetHexIPAddress();
             Console.WriteLine("Room code: " + hexIP);
+            Console.WriteLine("Waiting for the other player!");
+
+            networkManager.server.StartListening();
+
+            Console.WriteLine("Client connected! Press any key when ready!");
+            Console.ReadLine();
+
+            dataReciever = new Thread(() => networkManager.StartReceivingData(this));
+            dataReciever.Start();
+
+            networkManager.SendData("CAN_START");
+
+            while (!canStart)
+            {
+                ;
+            }
 
 
-            Console.ReadKey();
         }
 
         private void ConnectToRoom()
@@ -45,10 +73,45 @@ namespace Minesweeper_Console.NET
             Console.Clear();
             Console.WriteLine("Input room code: ");
 
-            Console.ReadLine();
+            string hexCode = Console.ReadLine();
+            hexCode = hexCode.Trim();
+            hexCode = hexCode.ToUpper();
+
+            networkManager.client.SetClientIP(hexCode);
+            networkManager.client.TryConnecting();
+
+            Console.WriteLine("Connected to room! Press any key when ready!");
+
+            dataReciever = new Thread(() => networkManager.StartReceivingData(this));
+            dataReciever.Start();
+
+            networkManager.SendData("CAN_START");
+
+            while(!canStart)
+            {
+                ;
+            }
 
 
 
+        }
+
+        private void PrintMaps()
+        {
+
+
+        }
+
+        public void HandleRecievedData(string data)
+        {
+            if (data.Contains("CAN_START"))
+                canStart = true;
+            
+        }
+
+        public void AbortRecieverThread()
+        {
+            dataReciever.Abort();
         }
 
         private int MultiplayerMenu()
