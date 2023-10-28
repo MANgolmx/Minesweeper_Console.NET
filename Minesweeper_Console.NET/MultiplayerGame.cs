@@ -89,14 +89,26 @@ namespace Minesweeper_Console.NET
 
         private void ConnectToRoom()
         {
-            Console.Clear();
-            Console.WriteLine("Input room code: ");
+            string hexCode;
+            bool isViable = false;
+            do
+            {
+                Console.Clear();
+                Console.WriteLine("Input room code: ");
 
-            string hexCode = Console.ReadLine();
-            hexCode = hexCode.Trim();
-            hexCode = hexCode.ToUpper();
+                hexCode = Console.ReadLine();
+                hexCode = hexCode.Trim();
+                hexCode = hexCode.ToUpper();
 
-            networkManager.client.SetClientIP(hexCode);
+                try {
+                    networkManager.client.SetClientIP(hexCode);
+                    isViable = true;
+                } catch { 
+                    Console.WriteLine("Wrong room code!");
+                    Console.ReadKey();
+                }
+            } while (!isViable);
+
             networkManager.client.TryConnecting();
 
             networkManager.SendData("HEXCLIENTIP " + networkManager.server.GetHexIPAddress());
@@ -163,7 +175,6 @@ namespace Minesweeper_Console.NET
                     Console.ReadKey();
                 }
             }
-
         }
 
         private int CheckWin()
@@ -374,7 +385,7 @@ namespace Minesweeper_Console.NET
             switch (Console.ReadKey().Key)
             {
                 case ConsoleKey.Escape:
-                    //Environment.Exit(0);
+                    Environment.Exit(0);
                     break;
 
                 case ConsoleKey.DownArrow:

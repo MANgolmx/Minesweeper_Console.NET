@@ -10,7 +10,6 @@ namespace Minesweeper_Console.NET
 {
     class NetworkManager
     {
-
         public Client client;
         public Server server;
 
@@ -20,6 +19,12 @@ namespace Minesweeper_Console.NET
         { 
             client = new Client();
             server = new Server();
+        }
+
+        ~NetworkManager()
+        {
+            client.tcpClient.Close();
+            server.tcpClient.Close();
         }
 
         public void SendData(string dataToSend)
