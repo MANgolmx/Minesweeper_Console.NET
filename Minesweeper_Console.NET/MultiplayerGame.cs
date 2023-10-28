@@ -722,7 +722,7 @@ namespace Minesweeper_Console.NET
 
         public void AbortRecieverThread()
         {
-            dataReciever.Abort();
+            return;
         }
 
         private int MultiplayerMenu()

@@ -29,24 +29,35 @@ namespace Minesweeper_Console.NET
 
         public void SendData(string dataToSend)
         {
-            NetworkStream nwStream = client.tcpClient.GetStream();
-            byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(dataToSend);
-            nwStream.Write(bytesToSend, 0, bytesToSend.Length);
+            if (client.tcpClient.Connected)
+            {
+                NetworkStream nwStream = client.tcpClient.GetStream();
+                byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(dataToSend);
+                nwStream.Write(bytesToSend, 0, bytesToSend.Length);
+            }
         }
 
         public void StartReceivingData(MultiplayerGame session)
         {
             while (server.tcpClient.Connected)
             {
-                NetworkStream nwStream = server.tcpClient.GetStream();
-                byte[] buffer = new byte[server.tcpClient.ReceiveBufferSize];
-                int bytesRead = nwStream.Read(buffer, 0, server.tcpClient.ReceiveBufferSize);
-                string dataReceived = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-                dataReceived = dataReceived.ToUpper();
+                try
+                {
+                    NetworkStream nwStream = server.tcpClient.GetStream();
+                    byte[] buffer = new byte[server.tcpClient.ReceiveBufferSize];
+                    int bytesRead = nwStream.Read(buffer, 0, server.tcpClient.ReceiveBufferSize);
+                    string dataReceived = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                    dataReceived = dataReceived.ToUpper();
 
-                if (dataReceived == "END")
+                    if (dataReceived == "END")
+                        session.AbortRecieverThread();
+                    else session.HandleRecievedData(dataReceived);
+                } catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    Console.ReadKey();
                     session.AbortRecieverThread();
-                else session.HandleRecievedData(dataReceived);
+                }
             }
             Console.WriteLine("Player disconnected!");
             Console.ReadKey();
