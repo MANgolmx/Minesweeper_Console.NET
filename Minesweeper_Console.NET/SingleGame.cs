@@ -388,7 +388,7 @@ namespace Minesweeper_Console.NET
                         Console.WriteLine("\nThink bigger!");
                         Console.ReadKey();
                     }
-                    else if (mines > (x*y) / 3)
+                    else if (mines > (x*y) / 2)
                     {
                         Console.WriteLine("Oh you think you will survive that? No way! Go easy on yourself!");
                         Console.ReadKey();
