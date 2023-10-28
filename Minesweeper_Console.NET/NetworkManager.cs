@@ -43,6 +43,8 @@ namespace Minesweeper_Console.NET
                     session.AbortRecieverThread();
                 else session.HandleRecievedData(dataReceived);
             }
+            Console.WriteLine("Player disconnected!");
+            Console.ReadKey();
             session.AbortRecieverThread();
         }
 

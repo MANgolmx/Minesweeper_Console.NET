@@ -350,7 +350,7 @@ namespace Minesweeper_Console.NET
                     }
                     Console.BackgroundColor = ConsoleColor.Black;
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.Write("     ");
+                    Console.Write("  |  ");
                 }
                 Console.BackgroundColor = ConsoleColor.Black;
                 Console.ForegroundColor = ConsoleColor.White;
@@ -437,6 +437,7 @@ namespace Minesweeper_Console.NET
                         else
                         {
                             map[(int)cursorPosition.X, (int)cursorPosition.Y].isOpened = true;
+                            networkManager.SendData("OPEN_ENEMY_CELLS " + (int)cursorPosition.X + " " + (int)cursorPosition.Y);
                             if (map[(int)cursorPosition.X, (int)cursorPosition.Y].isMine)
                                 return 1;
                         }
