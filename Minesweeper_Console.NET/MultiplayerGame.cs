@@ -87,7 +87,7 @@ namespace Minesweeper_Console.NET
             networkManager.client.SetClientIP(hexCode);
             networkManager.client.TryConnecting();
 
-            networkManager.SendData(networkManager.server.GetHexIPAddress());
+            networkManager.SendData("HEXCLIENTIP " + networkManager.server.GetHexIPAddress());
             networkManager.server.StartListening();
 
             dataReciever = new Thread(() => networkManager.StartReceivingData(this));
@@ -119,7 +119,14 @@ namespace Minesweeper_Console.NET
         {
             if (data.Contains("CAN_START"))
                 canStart = true;
-            
+            else if (data.Contains("HEXCLIENTIP"))
+            {
+                data = data.Replace("HEXCLIENTIP", "");
+                networkManager.client.SetClientIP(data);
+                networkManager.client.TryConnecting();
+
+                networkManager.readyToPlay = true;
+            }
         }
 
         public void AbortRecieverThread()
