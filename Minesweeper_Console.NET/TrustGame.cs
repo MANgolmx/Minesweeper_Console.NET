@@ -88,7 +88,7 @@ namespace Minesweeper_Console.NET
             Console.Clear();
 
             CreateMap();
-            
+
             networkManager.SendData("CREATE_MAP " + mineCount + " " + (int)mapSize.X + " " + (int)mapSize.Y + " " + coords[0] + " " + coords[1]);
 
             ChooseFirstInput();
@@ -187,10 +187,11 @@ namespace Minesweeper_Console.NET
                         Console.ReadKey();
                     }
                 }
-            } else
+            }
+            else
             {
                 isPlaying = true;
-                while(isPlaying)
+                while (isPlaying)
                 {
                     Console.Clear();
                     PrintMap();
@@ -202,7 +203,7 @@ namespace Minesweeper_Console.NET
                         Console.ReadKey();
                     }
 
-                    while(waitForUpdate)
+                    while (waitForUpdate)
                     {
                         ;
                     }
@@ -301,111 +302,197 @@ namespace Minesweeper_Console.NET
 
         private void PrintMap()
         {
+
             Console.Write("  ");
             for (int k = 0; k < mapSize.Y; k++)
                 Console.Write(coords[1][k]);
             Console.Write("\n");
-            for (int i = 0; i < mapSize.X; i++)
-            {
-                for (int j = 0; j < mapSize.Y; j++)
+
+            if (!host)
+                for (int i = 0; i < mapSize.X; i++)
                 {
+                    for (int j = 0; j < mapSize.Y; j++)
+                    {
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.ForegroundColor = ConsoleColor.White;
+                        if (j == 0)
+                            Console.Write(coords[0][i] + " ");
+
+                        if (map[i, j].isOpened)
+                        {
+                            if (map[i, j].isMine)
+                                Console.Write("*");
+                            else
+                            {
+                                switch (CalculateAdjascentMines(new Vector2(i, j)))
+                                {
+                                    case 1:
+                                        Console.BackgroundColor = ConsoleColor.Black;
+                                        Console.ForegroundColor = ConsoleColor.Green;
+                                        Console.Write("1");
+                                        break;
+                                    case 2:
+                                        Console.BackgroundColor = ConsoleColor.Black;
+                                        Console.ForegroundColor = ConsoleColor.DarkGreen;
+                                        Console.Write("2");
+                                        break;
+                                    case 3:
+                                        Console.BackgroundColor = ConsoleColor.Black;
+                                        Console.ForegroundColor = ConsoleColor.Cyan;
+                                        Console.Write("3");
+                                        break;
+                                    case 4:
+                                        Console.BackgroundColor = ConsoleColor.Black;
+                                        Console.ForegroundColor = ConsoleColor.Blue;
+                                        Console.Write("4");
+                                        break;
+                                    case 5:
+                                        Console.BackgroundColor = ConsoleColor.Black;
+                                        Console.ForegroundColor = ConsoleColor.Magenta;
+                                        Console.Write("5");
+                                        break;
+                                    case 6:
+                                        Console.BackgroundColor = ConsoleColor.Black;
+                                        Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                                        Console.Write("6");
+                                        break;
+                                    case 7:
+                                        Console.BackgroundColor = ConsoleColor.Black;
+                                        Console.ForegroundColor = ConsoleColor.Red;
+                                        Console.Write("7");
+                                        break;
+                                    case 8:
+                                        Console.BackgroundColor = ConsoleColor.Black;
+                                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                                        Console.Write("8");
+                                        break;
+                                    default:
+                                        Console.Write(" ");
+                                        break;
+                                }
+                            }
+                            continue;
+                        }
+                        if (map[i, j].isUndefined)
+                        {
+                            Console.Write("?");
+                            continue;
+                        }
+                        if (map[i, j].isFlagged)
+                        {
+                            Console.Write("!");
+                            continue;
+                        }
+                        Console.Write(".");
+                    }
                     Console.BackgroundColor = ConsoleColor.Black;
                     Console.ForegroundColor = ConsoleColor.White;
-                    if (j == 0)
-                        Console.Write(coords[0][i] + " ");
-                    if (cursorPosition.X == i && cursorPosition.Y == j)
-                    {
-                        Console.BackgroundColor = ConsoleColor.White;
-                        Console.ForegroundColor = ConsoleColor.Black;
-                    }
-
-                    if (map[i, j].isOpened)
-                    {
-                        if (map[i, j].isMine)
-                            Console.Write("*");
-                        else
-                        {
-                            switch (CalculateAdjascentMines(new Vector2(i, j)))
-                            {
-                                case 1:
-                                    Console.BackgroundColor = ConsoleColor.Black;
-                                    Console.ForegroundColor = ConsoleColor.Green;
-                                    if (cursorPosition.X == i && cursorPosition.Y == j)
-                                        Console.BackgroundColor = ConsoleColor.DarkGray;
-                                    Console.Write("1");
-                                    break;
-                                case 2:
-                                    Console.BackgroundColor = ConsoleColor.Black;
-                                    Console.ForegroundColor = ConsoleColor.DarkGreen;
-                                    if (cursorPosition.X == i && cursorPosition.Y == j)
-                                        Console.BackgroundColor = ConsoleColor.DarkGray;
-                                    Console.Write("2");
-                                    break;
-                                case 3:
-                                    Console.BackgroundColor = ConsoleColor.Black;
-                                    Console.ForegroundColor = ConsoleColor.Cyan;
-                                    if (cursorPosition.X == i && cursorPosition.Y == j)
-                                        Console.BackgroundColor = ConsoleColor.DarkGray;
-                                    Console.Write("3");
-                                    break;
-                                case 4:
-                                    Console.BackgroundColor = ConsoleColor.Black;
-                                    Console.ForegroundColor = ConsoleColor.Blue;
-                                    if (cursorPosition.X == i && cursorPosition.Y == j)
-                                        Console.BackgroundColor = ConsoleColor.DarkGray;
-                                    Console.Write("4");
-                                    break;
-                                case 5:
-                                    Console.BackgroundColor = ConsoleColor.Black;
-                                    Console.ForegroundColor = ConsoleColor.Magenta;
-                                    if (cursorPosition.X == i && cursorPosition.Y == j)
-                                        Console.BackgroundColor = ConsoleColor.DarkGray;
-                                    Console.Write("5");
-                                    break;
-                                case 6:
-                                    Console.BackgroundColor = ConsoleColor.Black;
-                                    Console.ForegroundColor = ConsoleColor.DarkMagenta;
-                                    if (cursorPosition.X == i && cursorPosition.Y == j)
-                                        Console.BackgroundColor = ConsoleColor.DarkGray;
-                                    Console.Write("6");
-                                    break;
-                                case 7:
-                                    Console.BackgroundColor = ConsoleColor.Black;
-                                    Console.ForegroundColor = ConsoleColor.Red;
-                                    if (cursorPosition.X == i && cursorPosition.Y == j)
-                                        Console.BackgroundColor = ConsoleColor.DarkGray;
-                                    Console.Write("7");
-                                    break;
-                                case 8:
-                                    Console.BackgroundColor = ConsoleColor.Black;
-                                    Console.ForegroundColor = ConsoleColor.DarkRed;
-                                    if (cursorPosition.X == i && cursorPosition.Y == j)
-                                        Console.BackgroundColor = ConsoleColor.DarkGray;
-                                    Console.Write("8");
-                                    break;
-                                default:
-                                    Console.Write(" ");
-                                    break;
-                            }
-                        }
-                        continue;
-                    }
-                    if (map[i, j].isUndefined)
-                    {
-                        Console.Write("?");
-                        continue;
-                    }
-                    if (map[i, j].isFlagged)
-                    {
-                        Console.Write("!");
-                        continue;
-                    }
-                    Console.Write(".");
+                    Console.Write("\n");
                 }
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.Write("\n");
-            }
+            else
+                for (int i = 0; i < mapSize.X; i++)
+                {
+                    for (int j = 0; j < mapSize.Y; j++)
+                    {
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.ForegroundColor = ConsoleColor.White;
+                        if (cursorPosition.X == i && cursorPosition.Y == j)
+                        {
+                            Console.BackgroundColor = ConsoleColor.White;
+                            Console.ForegroundColor = ConsoleColor.Black;
+                        }
+
+                        if (map[i, j].isOpened)
+                        {
+                            if (map[i, j].isMine)
+                                Console.Write("*");
+                            else
+                            {
+                                switch (CalculateAdjascentMines(new Vector2(i, j)))
+                                {
+                                    case 1:
+                                        Console.BackgroundColor = ConsoleColor.Black;
+                                        Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                        if (cursorPosition.X == i && cursorPosition.Y == j)
+                                            Console.BackgroundColor = ConsoleColor.DarkGray;
+                                        Console.Write(Random.Shared.Next(10));
+                                        break;
+                                    case 2:
+                                        Console.BackgroundColor = ConsoleColor.Black;
+                                        Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                        if (cursorPosition.X == i && cursorPosition.Y == j)
+                                            Console.BackgroundColor = ConsoleColor.DarkGray;
+                                        Console.Write(Random.Shared.Next(10));
+                                        break;
+                                    case 3:
+                                        Console.BackgroundColor = ConsoleColor.Black;
+                                        Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                        if (cursorPosition.X == i && cursorPosition.Y == j)
+                                            Console.BackgroundColor = ConsoleColor.DarkGray;
+                                        Console.Write(Random.Shared.Next(10));
+                                        break;
+                                    case 4:
+                                        Console.BackgroundColor = ConsoleColor.Black;
+                                        Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                        if (cursorPosition.X == i && cursorPosition.Y == j)
+                                            Console.BackgroundColor = ConsoleColor.DarkGray;
+                                        Console.Write(Random.Shared.Next(10));
+                                        break;
+                                    case 5:
+                                        Console.BackgroundColor = ConsoleColor.Black;
+                                        Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                        if (cursorPosition.X == i && cursorPosition.Y == j)
+                                            Console.BackgroundColor = ConsoleColor.DarkGray;
+                                        Console.Write(Random.Shared.Next(10));
+                                        break;
+                                    case 6:
+                                        Console.BackgroundColor = ConsoleColor.Black;
+                                        Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                        if (cursorPosition.X == i && cursorPosition.Y == j)
+                                            Console.BackgroundColor = ConsoleColor.DarkGray;
+                                        Console.Write(Random.Shared.Next(10));
+                                        break;
+                                    case 7:
+                                        Console.BackgroundColor = ConsoleColor.Black;
+                                        Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                        if (cursorPosition.X == i && cursorPosition.Y == j)
+                                            Console.BackgroundColor = ConsoleColor.DarkGray;
+                                        Console.Write(Random.Shared.Next(10));
+                                        break;
+                                    case 8:
+                                        Console.BackgroundColor = ConsoleColor.Black;
+                                        Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                        if (cursorPosition.X == i && cursorPosition.Y == j)
+                                            Console.BackgroundColor = ConsoleColor.DarkGray;
+                                        Console.Write(Random.Shared.Next(10));
+                                        break;
+                                    default:
+                                        int a = Random.Shared.Next(10);
+                                        if (a < 2)
+                                            Console.Write("*");
+                                        else
+                                            Console.Write(" ");
+                                        break;
+                                }
+                            }
+                            continue;
+                        }
+                        if (map[i, j].isUndefined)
+                        {
+                            Console.Write("?");
+                            continue;
+                        }
+                        if (map[i, j].isFlagged)
+                        {
+                            Console.Write("!");
+                            continue;
+                        }
+                        Console.Write(".");
+                    }
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.Write("\n");
+                }
         }
 
         private void GetMapInfo()
