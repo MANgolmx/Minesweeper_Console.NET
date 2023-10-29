@@ -223,6 +223,7 @@ namespace Minesweeper_Console.NET
 
         private int InputManager(bool firstInput = false)
         {
+            if (host)
             switch (Console.ReadKey().Key)
             {
                 case ConsoleKey.Escape:
@@ -263,14 +264,17 @@ namespace Minesweeper_Console.NET
                 case ConsoleKey.Delete:
                     map[(int)cursorPosition.X, (int)cursorPosition.Y].isUndefined = false;
                     map[(int)cursorPosition.X, (int)cursorPosition.Y].isFlagged = false;
+                    networkManager.SendData("DELETE_CELL " + (int)cursorPosition.X + " " + (int)cursorPosition.Y);
                     break;
 
                 case ConsoleKey.Q:
                     map[(int)cursorPosition.X, (int)cursorPosition.Y].isUndefined = !map[(int)cursorPosition.X, (int)cursorPosition.Y].isUndefined;
+                    networkManager.SendData("UNDEFINED_CELL " + (int)cursorPosition.X + " " + (int)cursorPosition.Y);
                     break;
 
                 case ConsoleKey.Tab:
                     map[(int)cursorPosition.X, (int)cursorPosition.Y].isFlagged = !map[(int)cursorPosition.X, (int)cursorPosition.Y].isFlagged;
+                    networkManager.SendData("FLAGGED_CELL " + (int)cursorPosition.X + " " + (int)cursorPosition.Y);
                     break;
 
                 case ConsoleKey.Enter:
@@ -322,6 +326,12 @@ namespace Minesweeper_Console.NET
                         {
                             if (map[i, j].isMine)
                                 Console.Write("*");
+                            else if (map[i, j].isTrap)
+                            {
+                                Console.BackgroundColor = ConsoleColor.White;
+                                Console.ForegroundColor = ConsoleColor.White;
+                                Console.Write(" ");
+                            }
                             else
                             {
                                 switch (CalculateAdjascentMines(new Vector2(i, j)))
@@ -373,16 +383,8 @@ namespace Minesweeper_Console.NET
                             }
                             continue;
                         }
-                        if (map[i, j].isUndefined)
-                        {
-                            Console.Write("?");
-                            continue;
-                        }
-                        if (map[i, j].isFlagged)
-                        {
-                            Console.Write("!");
-                            continue;
-                        }
+
+
                         Console.Write(".");
                     }
                     Console.BackgroundColor = ConsoleColor.Black;
@@ -396,6 +398,8 @@ namespace Minesweeper_Console.NET
                     {
                         Console.BackgroundColor = ConsoleColor.Black;
                         Console.ForegroundColor = ConsoleColor.White;
+                        if (j == 0)
+                            Console.Write(coords[0][i] + " ");
                         if (cursorPosition.X == i && cursorPosition.Y == j)
                         {
                             Console.BackgroundColor = ConsoleColor.White;
@@ -468,8 +472,14 @@ namespace Minesweeper_Console.NET
                                         break;
                                     default:
                                         int a = Random.Shared.Next(10);
-                                        if (a < 2)
+                                        if (a < 1)
                                             Console.Write("*");
+                                        else if (a < 2)
+                                        {
+                                            Console.BackgroundColor = ConsoleColor.Black;
+                                            Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                            Console.Write(Random.Shared.Next(10));
+                                        }
                                         else
                                             Console.Write(" ");
                                         break;
@@ -529,9 +539,9 @@ namespace Minesweeper_Console.NET
                         Console.WriteLine("\nMap must be bigger than 5x5");
                         Console.ReadKey();
                     }
-                    else if (x > 70 && y > 70)
+                    else if (x > 60 && y > 60)
                     {
-                        Console.WriteLine("\nMap must be smaller than 70x70");
+                        Console.WriteLine("\nMap must be smaller than 60x60");
                         Console.ReadKey();
                     }
                     else rightInputFlag = true;
@@ -672,7 +682,22 @@ namespace Minesweeper_Console.NET
                 OpenCells(new Vector2(int.Parse(tokens[1]), int.Parse(tokens[2])));
                 waitForUpdate = false;
             }
-
+            else if (data.Contains("FLAGGED_CELL"))
+            {
+                map[int.Parse(data.Split()[1]), int.Parse(data.Split()[2])].isFlagged = !map[int.Parse(data.Split()[1]), int.Parse(data.Split()[2])].isFlagged;
+                waitForUpdate = false;
+            }
+            else if (data.Contains("UNDEFINED_CELL"))
+            {
+                map[int.Parse(data.Split()[1]), int.Parse(data.Split()[2])].isUndefined = !map[int.Parse(data.Split()[1]), int.Parse(data.Split()[2])].isUndefined;
+                waitForUpdate = false;
+            } 
+            else if (data.Contains("DELETE_CELL"))
+            {
+                map[int.Parse(data.Split()[1]), int.Parse(data.Split()[2])].isUndefined = false;
+                map[int.Parse(data.Split()[1]), int.Parse(data.Split()[2])].isFlagged = false;
+                waitForUpdate = false;
+            }
         }
 
         private void FillMap()
