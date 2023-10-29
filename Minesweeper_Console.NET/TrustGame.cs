@@ -835,7 +835,7 @@ namespace Minesweeper_Console.NET
 
                 if (!map[posX, posY].isMine && (map[posX, posY].isMine = true))
                 {
-                    if (CalculateAdjascentMines(new Vector2((int)cursorPosition.Y, (int)cursorPosition.X)) > 0)
+                    if (CalculateAdjascentMines(new Vector2((int)cursorPosition.X, (int)cursorPosition.Y)) > 0)
                     {
                         map[posX, posY].isMine = false;
                         continue;
