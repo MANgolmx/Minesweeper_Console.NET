@@ -22,6 +22,8 @@ namespace Minesweeper_Console.NET
         private bool isPlaying = true;
         private bool waitForUpdate = true;
 
+        private int trapsCount;
+
         private Vector2 mapSize;
         private int mineCount;
         private Cell[,] map;
@@ -331,6 +333,7 @@ namespace Minesweeper_Console.NET
                                 Console.BackgroundColor = ConsoleColor.White;
                                 Console.ForegroundColor = ConsoleColor.White;
                                 Console.Write(" ");
+                                continue;
                             }
                             else
                             {
@@ -383,8 +386,16 @@ namespace Minesweeper_Console.NET
                             }
                             continue;
                         }
-
-
+                        if (map[i, j].isUndefined)
+                        {
+                            Console.Write("?");
+                            continue;
+                        }
+                        if (map[i, j].isFlagged)
+                        {
+                            Console.Write("!");
+                            continue;
+                        }
                         Console.Write(".");
                     }
                     Console.BackgroundColor = ConsoleColor.Black;
@@ -675,6 +686,28 @@ namespace Minesweeper_Console.NET
                 for (int i = 2; i < mineCount * 2; i += 2)
                     map[int.Parse(tokens[i]), int.Parse(tokens[i + 1])].isMine = true;
 
+                List<Vector2> freeCells = new List<Vector2>();
+
+                for (int i = 0; i < mapSize.X; i++)
+                    for (int j = 0; j < mapSize.Y; j++)
+                        if (map[i, j].isOpened && CalculateAdjascentMines(new Vector2(i,j)) == 0)
+                            freeCells.Add(new Vector2(i,j));
+
+                while (trapsCount > freeCells.Count / 2)
+                {
+                    trapsCount /= 2;
+                }
+
+                int createdTraps = 0;
+
+                do
+                {
+                    int posIndex = Random.Shared.Next(freeCells.Count);
+                    if (!map[(int)freeCells[posIndex].X, (int)freeCells[posIndex].Y].isTrap && (map[(int)freeCells[posIndex].X, (int)freeCells[posIndex].Y].isTrap = true))
+                        createdTraps++;
+
+                } while (createdTraps < trapsCount);
+
                 OpenCells(new Vector2(CursorX, CursorY));
                 waitForUpdate = false;
             }
@@ -724,6 +757,8 @@ namespace Minesweeper_Console.NET
                 }
 
             } while (generatedMines < mineCount);
+
+
 
             OpenCells(cursorPosition);
 
@@ -775,6 +810,8 @@ namespace Minesweeper_Console.NET
             for (int i = 0; i < mapSize.X; i++)
                 for (int j = 0; j < mapSize.Y; j++)
                     map[i, j] = new Cell();
+
+            trapsCount = (int)(mapSize.X * mapSize.Y * 0.15);
 
             if (host)
             {
