@@ -29,11 +29,17 @@ namespace Minesweeper_Console.NET
 
         public void SendData(string dataToSend)
         {
-            if (client.tcpClient.Connected)
+            try
             {
-                NetworkStream nwStream = client.tcpClient.GetStream();
-                byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(dataToSend);
-                nwStream.Write(bytesToSend, 0, bytesToSend.Length);
+                if (client.tcpClient.Connected)
+                {
+                    NetworkStream nwStream = client.tcpClient.GetStream();
+                    byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(dataToSend);
+                    nwStream.Write(bytesToSend, 0, bytesToSend.Length);
+                }
+            }  catch(Exception ex)
+            {
+                Console.Write("Something went wrong!\n" + ex.Message);
             }
         }
 

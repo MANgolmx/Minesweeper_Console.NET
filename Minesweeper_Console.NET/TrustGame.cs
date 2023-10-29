@@ -446,9 +446,9 @@ namespace Minesweeper_Console.NET
                                             Console.Write(".");
                                         else
                                         {
-                                            Console.Write(t);
                                             Console.BackgroundColor = ConsoleColor.Black;
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                            Console.Write(t);
                                         }
                                         break;
                                     case 2:
@@ -458,9 +458,9 @@ namespace Minesweeper_Console.NET
                                             Console.Write(".");
                                         else
                                         {
-                                            Console.Write(t);
                                             Console.BackgroundColor = ConsoleColor.Black;
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                            Console.Write(t);
                                         }
                                         break;
                                     case 3:
@@ -470,9 +470,9 @@ namespace Minesweeper_Console.NET
                                             Console.Write(".");
                                         else
                                         {
-                                            Console.Write(t);
                                             Console.BackgroundColor = ConsoleColor.Black;
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                            Console.Write(t);
                                         }
                                         break;
                                     case 4:
@@ -482,9 +482,9 @@ namespace Minesweeper_Console.NET
                                             Console.Write(".");
                                         else
                                         {
-                                            Console.Write(t);
                                             Console.BackgroundColor = ConsoleColor.Black;
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                            Console.Write(t);
                                         }
                                         break;
                                     case 5:
@@ -494,9 +494,9 @@ namespace Minesweeper_Console.NET
                                             Console.Write(".");
                                         else
                                         {
-                                            Console.Write(t);
                                             Console.BackgroundColor = ConsoleColor.Black;
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                            Console.Write(t);
                                         }
                                         break;
                                     case 6:
@@ -506,9 +506,9 @@ namespace Minesweeper_Console.NET
                                             Console.Write(".");
                                         else
                                         {
-                                            Console.Write(t);
                                             Console.BackgroundColor = ConsoleColor.Black;
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                            Console.Write(t);
                                         }
                                         break;
                                     case 7:
@@ -518,9 +518,9 @@ namespace Minesweeper_Console.NET
                                             Console.Write(".");
                                         else
                                         {
-                                            Console.Write(t);
                                             Console.BackgroundColor = ConsoleColor.Black;
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                            Console.Write(t);
                                         }
                                         break;
                                     case 8:
@@ -530,9 +530,9 @@ namespace Minesweeper_Console.NET
                                             Console.Write(".");
                                         else
                                         {
-                                            Console.Write(t);
                                             Console.BackgroundColor = ConsoleColor.Black;
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                            Console.Write(t);
                                         }
                                         break;
                                     default:
@@ -814,6 +814,7 @@ namespace Minesweeper_Console.NET
                 Console.WriteLine("Your partner blew up :(");
                 Console.ReadKey();
                 isPlaying = false;
+                waitForUpdate = false;
             }
         }
 
@@ -928,6 +929,7 @@ namespace Minesweeper_Console.NET
         public void AbortRecieverThread()
         {
             isPlaying = false;
+            waitForUpdate = false;
             return;
         }
 
