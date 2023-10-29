@@ -48,6 +48,9 @@ namespace Minesweeper_Console.NET
                         if (choice > 0)
                             choice--;
                         break;
+                    case ConsoleKey.Escape:
+                        Environment.Exit(0);
+                        return 0;
                 }
             }
         }
