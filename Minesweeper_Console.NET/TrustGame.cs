@@ -179,6 +179,7 @@ namespace Minesweeper_Console.NET
                     {
                         isPlaying = false;
                         Console.WriteLine("\nYou blew up! Be careful next time!\n");
+                        networkManager.SendData("LOST");
                         Console.ReadKey();
                     }
 
@@ -435,75 +436,116 @@ namespace Minesweeper_Console.NET
                                 Console.Write("*");
                             else
                             {
+                                int t = Random.Shared.Next(13);
                                 switch (CalculateAdjascentMines(new Vector2(i, j)))
                                 {
                                     case 1:
-                                        Console.BackgroundColor = ConsoleColor.Black;
-                                        Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
                                         if (cursorPosition.X == i && cursorPosition.Y == j)
-                                            Console.BackgroundColor = ConsoleColor.DarkGray;
-                                        Console.Write(Random.Shared.Next(10));
+                                            Console.BackgroundColor = ConsoleColor.Gray;
+                                        if (t >= 10)
+                                            Console.Write(".");
+                                        else
+                                        {
+                                            Console.Write(t);
+                                            Console.BackgroundColor = ConsoleColor.Black;
+                                            Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                        }
                                         break;
                                     case 2:
-                                        Console.BackgroundColor = ConsoleColor.Black;
-                                        Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
                                         if (cursorPosition.X == i && cursorPosition.Y == j)
-                                            Console.BackgroundColor = ConsoleColor.DarkGray;
-                                        Console.Write(Random.Shared.Next(10));
+                                            Console.BackgroundColor = ConsoleColor.Gray;
+                                        if (t >= 10)
+                                            Console.Write(".");
+                                        else
+                                        {
+                                            Console.Write(t);
+                                            Console.BackgroundColor = ConsoleColor.Black;
+                                            Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                        }
                                         break;
                                     case 3:
-                                        Console.BackgroundColor = ConsoleColor.Black;
-                                        Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
                                         if (cursorPosition.X == i && cursorPosition.Y == j)
-                                            Console.BackgroundColor = ConsoleColor.DarkGray;
-                                        Console.Write(Random.Shared.Next(10));
+                                            Console.BackgroundColor = ConsoleColor.Gray;
+                                        if (t >= 10)
+                                            Console.Write(".");
+                                        else
+                                        {
+                                            Console.Write(t);
+                                            Console.BackgroundColor = ConsoleColor.Black;
+                                            Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                        }
                                         break;
                                     case 4:
-                                        Console.BackgroundColor = ConsoleColor.Black;
-                                        Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
                                         if (cursorPosition.X == i && cursorPosition.Y == j)
-                                            Console.BackgroundColor = ConsoleColor.DarkGray;
-                                        Console.Write(Random.Shared.Next(10));
+                                            Console.BackgroundColor = ConsoleColor.Gray;
+                                        if (t >= 10)
+                                            Console.Write(".");
+                                        else
+                                        {
+                                            Console.Write(t);
+                                            Console.BackgroundColor = ConsoleColor.Black;
+                                            Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                        }
                                         break;
                                     case 5:
-                                        Console.BackgroundColor = ConsoleColor.Black;
-                                        Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
                                         if (cursorPosition.X == i && cursorPosition.Y == j)
-                                            Console.BackgroundColor = ConsoleColor.DarkGray;
-                                        Console.Write(Random.Shared.Next(10));
+                                            Console.BackgroundColor = ConsoleColor.Gray;
+                                        if (t >= 10)
+                                            Console.Write(".");
+                                        else
+                                        {
+                                            Console.Write(t);
+                                            Console.BackgroundColor = ConsoleColor.Black;
+                                            Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                        }
                                         break;
                                     case 6:
-                                        Console.BackgroundColor = ConsoleColor.Black;
-                                        Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
                                         if (cursorPosition.X == i && cursorPosition.Y == j)
-                                            Console.BackgroundColor = ConsoleColor.DarkGray;
-                                        Console.Write(Random.Shared.Next(10));
+                                            Console.BackgroundColor = ConsoleColor.Gray;
+                                        if (t >= 10)
+                                            Console.Write(".");
+                                        else
+                                        {
+                                            Console.Write(t);
+                                            Console.BackgroundColor = ConsoleColor.Black;
+                                            Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                        }
                                         break;
                                     case 7:
-                                        Console.BackgroundColor = ConsoleColor.Black;
-                                        Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
                                         if (cursorPosition.X == i && cursorPosition.Y == j)
-                                            Console.BackgroundColor = ConsoleColor.DarkGray;
-                                        Console.Write(Random.Shared.Next(10));
+                                            Console.BackgroundColor = ConsoleColor.Gray;
+                                        if (t >= 10)
+                                            Console.Write(".");
+                                        else
+                                        {
+                                            Console.Write(t);
+                                            Console.BackgroundColor = ConsoleColor.Black;
+                                            Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                        }
                                         break;
                                     case 8:
-                                        Console.BackgroundColor = ConsoleColor.Black;
-                                        Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
                                         if (cursorPosition.X == i && cursorPosition.Y == j)
-                                            Console.BackgroundColor = ConsoleColor.DarkGray;
-                                        Console.Write(Random.Shared.Next(10));
+                                            Console.BackgroundColor = ConsoleColor.Gray;
+                                        if (t >= 10)
+                                            Console.Write(".");
+                                        else
+                                        {
+                                            Console.Write(t);
+                                            Console.BackgroundColor = ConsoleColor.Black;
+                                            Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                        }
                                         break;
                                     default:
                                         int a = Random.Shared.Next(12);
-                                        if (a < 1)
+                                        if (t < 1)
                                             Console.Write("*");
-                                        else if (a < 2)
+                                        else if (t < 2)
                                         {
                                             Console.BackgroundColor = ConsoleColor.Black;
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
                                             Console.Write(Random.Shared.Next(10));
                                         }
-                                        else if (a < 3)
+                                        else if (t < 3)
                                             Console.Write(".");
                                         else
                                             Console.Write(" ");
@@ -702,7 +744,7 @@ namespace Minesweeper_Console.NET
 
                 for (int i = 0; i < mapSize.X; i++)
                     for (int j = 0; j < mapSize.Y; j++)
-                        if (map[i, j].isOpened && CalculateAdjascentMines(new Vector2(i,j)) == 0)
+                        if (CalculateAdjascentMines(new Vector2(i,j)) == 0)
                             freeCells.Add(new Vector2(i,j));
 
                 while (trapsCount > freeCells.Count / 2)
@@ -766,6 +808,12 @@ namespace Minesweeper_Console.NET
                 map[int.Parse(data.Split()[1]), int.Parse(data.Split()[2])].isUndefined = false;
                 map[int.Parse(data.Split()[1]), int.Parse(data.Split()[2])].isFlagged = false;
                 waitForUpdate = false;
+            }
+            else if (data.Contains("LOST"))
+            {
+                Console.WriteLine("Your partner blew up :(");
+                Console.ReadKey();
+                isPlaying = false;
             }
         }
 
@@ -879,6 +927,7 @@ namespace Minesweeper_Console.NET
 
         public void AbortRecieverThread()
         {
+            isPlaying = false;
             return;
         }
 
