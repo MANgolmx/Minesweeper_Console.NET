@@ -471,7 +471,7 @@ namespace Minesweeper_Console.NET
                                         Console.Write(Random.Shared.Next(10));
                                         break;
                                     default:
-                                        int a = Random.Shared.Next(10);
+                                        int a = Random.Shared.Next(12);
                                         if (a < 1)
                                             Console.Write("*");
                                         else if (a < 2)
@@ -480,6 +480,8 @@ namespace Minesweeper_Console.NET
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
                                             Console.Write(Random.Shared.Next(10));
                                         }
+                                        else if (a < 3)
+                                            Console.Write(".");
                                         else
                                             Console.Write(" ");
                                         break;
@@ -708,11 +710,11 @@ namespace Minesweeper_Console.NET
             do
             {
                 int posX = Random.Shared.Next((int)mapSize.X);
-                if ((int)cursorPosition.X == posX)
+                if ((int)cursorPosition.X == posX || CalculateAdjascentMines(new Vector2((int)cursorPosition.Y, (int)cursorPosition.X)) > 0)
                     continue;
 
                 int posY = Random.Shared.Next((int)mapSize.Y);
-                if ((int)cursorPosition.Y == posY)
+                if ((int)cursorPosition.Y == posY || CalculateAdjascentMines(new Vector2((int)cursorPosition.Y, (int)cursorPosition.X)) > 0)
                     continue;
 
                 if (!map[posX, posY].isMine && (map[posX, posY].isMine = true))

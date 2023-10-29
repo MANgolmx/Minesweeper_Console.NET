@@ -468,11 +468,11 @@ namespace Minesweeper_Console.NET
             do
             {
                 int posX = Random.Shared.Next((int)mapSize.X);
-                if ((int)cursorPosition.X == posX)
+                if ((int)cursorPosition.X == posX || CalculateAdjascentMines(new Vector2((int)cursorPosition.Y, (int)cursorPosition.X)) > 0)
                     continue;
 
                 int posY = Random.Shared.Next((int)mapSize.Y);
-                if ((int)cursorPosition.Y == posY)
+                if ((int)cursorPosition.Y == posY || CalculateAdjascentMines(new Vector2((int)cursorPosition.Y, (int)cursorPosition.X)) > 0)
                     continue;
 
                 if (!map[posX, posY].isMine && (map[posX, posY].isMine = true))
