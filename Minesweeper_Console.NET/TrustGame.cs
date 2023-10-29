@@ -19,6 +19,9 @@ namespace Minesweeper_Console.NET
         private bool mapCreatedFlag = false;
         private bool host = false;
 
+        private bool isPlaying = true;
+        private bool waitForUpdate = true;
+
         private Vector2 mapSize;
         private int mineCount;
         private Cell[,] map;
@@ -143,7 +146,7 @@ namespace Minesweeper_Console.NET
                 ;
             }
 
-            ChooseFirstInput();
+            ManageGame();
         }
 
         private void ChooseFirstInput()
@@ -154,10 +157,67 @@ namespace Minesweeper_Console.NET
                 PrintMap();
                 if (InputManager(true) == 1)
                 {
-                    //ManageGame();
+                    ManageGame();
                     return;
                 }
             }
+        }
+
+        private void ManageGame()
+        {
+            if (host)
+            {
+                isPlaying = true;
+
+                while (isPlaying)
+                {
+                    Console.Clear();
+                    PrintMap();
+                    if (InputManager() == 1)
+                    {
+                        isPlaying = false;
+                        Console.WriteLine("\nYou blew up! Be careful next time!\n");
+                        Console.ReadKey();
+                    }
+
+                    if (CheckWin() == 1)
+                    {
+                        isPlaying = false;
+                        Console.WriteLine("\nYou won! Good job boss man!\n");
+                        Console.ReadKey();
+                    }
+                }
+            } else
+            {
+                isPlaying = true;
+                while(isPlaying)
+                {
+                    Console.Clear();
+                    PrintMap();
+
+                    if (CheckWin() == 1)
+                    {
+                        isPlaying = false;
+                        Console.WriteLine("\nYou won! Good job boss man!\n");
+                        Console.ReadKey();
+                    }
+
+                    while(waitForUpdate)
+                    {
+                        ;
+                    }
+                    waitForUpdate = true;
+                }
+            }
+        }
+
+        private int CheckWin()
+        {
+            for (int i = 0; i < mapSize.X; i++)
+                for (int j = 0; j < mapSize.Y; j++)
+                    if (!map[i, j].isOpened && !map[i, j].isMine)
+                        return 0;
+            return 1;
         }
 
         private int InputManager(bool firstInput = false)
@@ -474,17 +534,7 @@ namespace Minesweeper_Console.NET
 
         public void HandleRecievedData(string data)
         {
-            if (data.Contains("HEXCLIENTIP"))
-            {
-                data = data.Replace("HEXCLIENTIP ", "");
-                networkManager.client.SetClientIP(data);
-                networkManager.client.TryConnecting();
-
-                networkManager.readyToPlay = true;
-            }
-            else if (data.Contains("CAN_START"))
-                canStartFlag = true;
-            else if (data.Contains("CREATE_MAP"))
+            if (data.ToUpper().Contains("CREATE_MAP"))
             {
                 data = data.Replace("CREATE_MAP ", "");
 
@@ -497,7 +547,21 @@ namespace Minesweeper_Console.NET
                 CreateMap();
 
                 mapCreatedFlag = true;
-            } else if (data.Contains("FILL_MAP"))
+            }
+
+            data = data.ToUpper();
+
+            if (data.Contains("HEXCLIENTIP"))
+            {
+                data = data.Replace("HEXCLIENTIP ", "");
+                networkManager.client.SetClientIP(data);
+                networkManager.client.TryConnecting();
+
+                networkManager.readyToPlay = true;
+            }
+            else if (data.Contains("CAN_START"))
+                canStartFlag = true;
+            else if (data.Contains("FILL_MAP"))
             {
                 int CursorX = 0;
                 int CursorY = 0;
@@ -513,11 +577,13 @@ namespace Minesweeper_Console.NET
                     map[int.Parse(tokens[i]), int.Parse(tokens[i + 1])].isMine = true;
 
                 OpenCells(new Vector2(CursorX, CursorY));
+                waitForUpdate = false;
             }
             else if (data.Contains("OPEN_CELLS"))
             {
                 string[] tokens = data.Split();
                 OpenCells(new Vector2(int.Parse(tokens[1]), int.Parse(tokens[2])));
+                waitForUpdate = false;
             }
 
         }
@@ -596,22 +662,25 @@ namespace Minesweeper_Console.NET
                 for (int j = 0; j < mapSize.Y; j++)
                     map[i, j] = new Cell();
 
-            coords[0] = "";
-            for (int i = 0; i < mapSize.X; i++)
+            if (host)
             {
-                int t = Random.Shared.Next(alphabet.Length);
-                if (!coords[0].Contains(alphabet[t]))
-                    coords[0] += alphabet[t];
-                else i--;
-            }
+                coords[0] = "";
+                for (int i = 0; i < mapSize.X; i++)
+                {
+                    int t = Random.Shared.Next(alphabet.Length);
+                    if (!coords[0].Contains(alphabet[t]))
+                        coords[0] += alphabet[t];
+                    else i--;
+                }
 
-            coords[1] = "";
-            for (int i = 0; i < mapSize.Y; i++)
-            {
-                int t = Random.Shared.Next(alphabet.Length);
-                if (!coords[1].Contains(alphabet[t]))
-                    coords[1] += alphabet[t];
-                else i--;
+                coords[1] = "";
+                for (int i = 0; i < mapSize.Y; i++)
+                {
+                    int t = Random.Shared.Next(alphabet.Length);
+                    if (!coords[1].Contains(alphabet[t]))
+                        coords[1] += alphabet[t];
+                    else i--;
+                }
             }
         }
 
