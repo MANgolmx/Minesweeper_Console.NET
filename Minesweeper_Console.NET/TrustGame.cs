@@ -321,7 +321,6 @@ namespace Minesweeper_Console.NET
 
         private void PrintMap()
         {
-
             Console.Write("  ");
             for (int k = 0; k < mapSize.Y; k++)
                 Console.Write(coords[1][k]);
@@ -873,6 +872,10 @@ namespace Minesweeper_Console.NET
             if (pos.X < mapSize.X - 1) OpenCells(new Vector2(pos.X + 1, pos.Y));
             if (pos.Y > 0) OpenCells(new Vector2(pos.X, pos.Y - 1));
             if (pos.Y < mapSize.Y - 1) OpenCells(new Vector2(pos.X, pos.Y + 1));
+            if (pos.X > 0 && pos.Y > 0) OpenCells(new Vector2(pos.X - 1, pos.Y - 1));
+            if (pos.X > 0 && pos.Y < mapSize.Y - 1) OpenCells(new Vector2(pos.X - 1, pos.Y + 1));
+            if (pos.X < mapSize.X - 1 && pos.Y > 0) OpenCells(new Vector2(pos.X + 1, pos.Y - 1));
+            if (pos.X < mapSize.X - 1 && pos.Y < mapSize.Y - 1) OpenCells(new Vector2(pos.X + 1, pos.Y + 1));      
         }
 
         private int CalculateAdjascentMines(Vector2 pos)
