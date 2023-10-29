@@ -23,6 +23,9 @@ namespace Minesweeper_Console.NET
         private int mineCount;
         private Cell[,] map;
 
+        private const string alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@$%";
+        private string[] coords;
+
         private Vector2 cursorPosition;
 
         public TrustGame()
@@ -78,7 +81,7 @@ namespace Minesweeper_Console.NET
             GetMapInfo();
             Console.Clear();
 
-            networkManager.SendData("CREATE_MAP " + mineCount + " " + (int)mapSize.X + " " + (int)mapSize.Y);
+            networkManager.SendData("CREATE_MAP " + mineCount + " " + (int)mapSize.X + " " + (int)mapSize.Y + " " + coords[0] + " " + coords[1]);
 
             CreateMap();
 
@@ -144,7 +147,7 @@ namespace Minesweeper_Console.NET
             {
                 Console.Clear();
                 PrintMap();
-                //if (InputManager(true) == 1)
+                if (InputManager(true) == 1)
                 {
                     //ManageGame();
                     return;
@@ -152,14 +155,98 @@ namespace Minesweeper_Console.NET
             }
         }
 
+        private int InputManager(bool firstInput = false)
+        {
+            switch (Console.ReadKey().Key)
+            {
+                case ConsoleKey.Escape:
+                    Environment.Exit(0);
+                    break;
+
+                case ConsoleKey.DownArrow:
+                    if (cursorPosition.X < mapSize.X - 1)
+                        cursorPosition.X++;
+                    break;
+
+                case ConsoleKey.UpArrow:
+                    if (cursorPosition.X > 0)
+                        cursorPosition.X--;
+                    break;
+
+                case ConsoleKey.LeftArrow:
+                    if (cursorPosition.Y > 0)
+                        cursorPosition.Y--;
+                    else if (cursorPosition.X > 0)
+                    {
+                        cursorPosition.Y = mapSize.Y - 1;
+                        cursorPosition.X--;
+                    }
+                    break;
+
+                case ConsoleKey.RightArrow:
+
+                    if (cursorPosition.Y < mapSize.Y - 1)
+                        cursorPosition.Y++;
+                    else if (cursorPosition.X < mapSize.X - 1)
+                    {
+                        cursorPosition.Y = 0;
+                        cursorPosition.X++;
+                    }
+                    break;
+
+                case ConsoleKey.Delete:
+                    map[(int)cursorPosition.X, (int)cursorPosition.Y].isUndefined = false;
+                    map[(int)cursorPosition.X, (int)cursorPosition.Y].isFlagged = false;
+                    break;
+
+                case ConsoleKey.Q:
+                    map[(int)cursorPosition.X, (int)cursorPosition.Y].isUndefined = !map[(int)cursorPosition.X, (int)cursorPosition.Y].isUndefined;
+                    break;
+
+                case ConsoleKey.Tab:
+                    map[(int)cursorPosition.X, (int)cursorPosition.Y].isFlagged = !map[(int)cursorPosition.X, (int)cursorPosition.Y].isFlagged;
+                    break;
+
+                case ConsoleKey.Enter:
+                    if (firstInput)
+                    {
+                        FillMap();
+                        return 1;
+                    }
+                    else if (!map[(int)cursorPosition.X, (int)cursorPosition.Y].isFlagged)
+                    {
+                        if (!map[(int)cursorPosition.X, (int)cursorPosition.Y].isMine && CalculateAdjascentMines(cursorPosition) == 0)
+                        {
+                            OpenCells(cursorPosition);
+                            networkManager.SendData("OPEN_CELLS " + (int)cursorPosition.X + " " + (int)cursorPosition.Y);
+                        }
+                        else
+                        {
+                            map[(int)cursorPosition.X, (int)cursorPosition.Y].isOpened = true;
+                            networkManager.SendData("OPEN_CELLS " + (int)cursorPosition.X + " " + (int)cursorPosition.Y);
+                            if (map[(int)cursorPosition.X, (int)cursorPosition.Y].isMine)
+                                return 1;
+                        }
+                    }
+                    break;
+            }
+
+            return 0;
+        }
+
         private void PrintMap()
         {
+            for (int k = 0; k < mapSize.Y; k++)
+                Console.Write(coords[1][k]);
+            Console.Write("\n");
             for (int i = 0; i < mapSize.X; i++)
             {
                 for (int j = 0; j < mapSize.Y; j++)
                 {
                     Console.BackgroundColor = ConsoleColor.Black;
                     Console.ForegroundColor = ConsoleColor.White;
+                    if (j == 0)
+                        Console.Write(coords[0][i] + " ");
                     if (cursorPosition.X == i && cursorPosition.Y == j)
                     {
                         Console.BackgroundColor = ConsoleColor.White;
@@ -398,6 +485,9 @@ namespace Minesweeper_Console.NET
                 mineCount = int.Parse(data.Split()[0]);
                 mapSize = new Vector2(int.Parse(data.Split()[1]), int.Parse(data.Split()[2]));
 
+                coords[0] = data.Split()[3];
+                coords[1] = data.Split()[4];
+
                 CreateMap();
 
                 mapCreatedFlag = true;
@@ -418,7 +508,12 @@ namespace Minesweeper_Console.NET
 
                 OpenCells(new Vector2(CursorX, CursorY));
             }
-            
+            else if (data.Contains("OPEN_CELLS"))
+            {
+                string[] tokens = data.Split();
+                OpenCells(new Vector2(int.Parse(tokens[1]), int.Parse(tokens[2])));
+            }
+
         }
 
         private void FillMap()
@@ -494,6 +589,24 @@ namespace Minesweeper_Console.NET
             for (int i = 0; i < mapSize.X; i++)
                 for (int j = 0; j < mapSize.Y; j++)
                     map[i, j] = new Cell();
+
+            coords[0] = "";
+            for (int i = 0; i < mapSize.X; i++)
+            {
+                int t = Random.Shared.Next(alphabet.Length);
+                if (!coords[0].Contains(alphabet[t]))
+                    coords[0] += alphabet[t];
+                else i--;
+            }
+
+            coords[1] = "";
+            for (int i = 0; i < mapSize.Y; i++)
+            {
+                int t = Random.Shared.Next(alphabet.Length);
+                if (!coords[1].Contains(alphabet[t]))
+                    coords[1] += alphabet[t];
+                else i--;
+            }
         }
 
         public void AbortRecieverThread()
