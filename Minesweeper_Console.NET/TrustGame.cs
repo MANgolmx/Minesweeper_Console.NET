@@ -31,6 +31,7 @@ namespace Minesweeper_Console.NET
         public TrustGame()
         {
             networkManager = new NetworkManager();
+            coords = new string[2];
         }
 
         public void StartGame()
@@ -73,7 +74,9 @@ namespace Minesweeper_Console.NET
 
             networkManager.SendData("CAN_START");
 
-            while(!canStartFlag)
+            Console.WriteLine("Waiting for the other player to get ready...");
+
+            while (!canStartFlag)
             {
                 ;
             }
@@ -81,9 +84,9 @@ namespace Minesweeper_Console.NET
             GetMapInfo();
             Console.Clear();
 
-            networkManager.SendData("CREATE_MAP " + mineCount + " " + (int)mapSize.X + " " + (int)mapSize.Y + " " + coords[0] + " " + coords[1]);
-
             CreateMap();
+            
+            networkManager.SendData("CREATE_MAP " + mineCount + " " + (int)mapSize.X + " " + (int)mapSize.Y + " " + coords[0] + " " + coords[1]);
 
             ChooseFirstInput();
         }
@@ -125,6 +128,8 @@ namespace Minesweeper_Console.NET
             Console.ReadKey();
 
             networkManager.SendData("CAN_START");
+
+            Console.WriteLine("Waiting for the host to get ready...");
 
             while (!canStartFlag)
             {
@@ -236,6 +241,7 @@ namespace Minesweeper_Console.NET
 
         private void PrintMap()
         {
+            Console.Write("  ");
             for (int k = 0; k < mapSize.Y; k++)
                 Console.Write(coords[1][k]);
             Console.Write("\n");
