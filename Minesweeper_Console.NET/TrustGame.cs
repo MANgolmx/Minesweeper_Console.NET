@@ -225,7 +225,8 @@ namespace Minesweeper_Console.NET
 
         private int InputManager(bool firstInput = false)
         {
-            if (host)
+            if (!host)
+                return 0;
             switch (Console.ReadKey().Key)
             {
                 case ConsoleKey.Escape:
@@ -303,7 +304,18 @@ namespace Minesweeper_Console.NET
                     break;
             }
 
+            CheckTrap();
+
             return 0;
+        }
+
+        private void CheckTrap()
+        {
+            if (map[(int)cursorPosition.X, (int)cursorPosition.Y].isTrap)
+            {
+                CreateCoords();
+                networkManager.SendData("COORDS " + coords[0] + " " + coords[1]);
+            }
         }
 
         private void PrintMap()
@@ -683,7 +695,7 @@ namespace Minesweeper_Console.NET
                 CursorX = int.Parse(tokens[0]);
                 CursorY = int.Parse(tokens[1]);
 
-                for (int i = 2; i < mineCount * 2; i += 2)
+                for (int i = 2; i < mineCount * 2 + 1; i += 2)
                     map[int.Parse(tokens[i]), int.Parse(tokens[i + 1])].isMine = true;
 
                 List<Vector2> freeCells = new List<Vector2>();
@@ -700,16 +712,38 @@ namespace Minesweeper_Console.NET
 
                 int createdTraps = 0;
 
+                string trapsData = "" + trapsCount;
+
                 do
                 {
                     int posIndex = Random.Shared.Next(freeCells.Count);
                     if (!map[(int)freeCells[posIndex].X, (int)freeCells[posIndex].Y].isTrap && (map[(int)freeCells[posIndex].X, (int)freeCells[posIndex].Y].isTrap = true))
+                    {
+                        trapsData += " " + (int)freeCells[posIndex].X + " " + (int)freeCells[posIndex].Y;
                         createdTraps++;
-
+                    }
                 } while (createdTraps < trapsCount);
+
+                networkManager.SendData("FILL_TRAPS " + trapsData);
 
                 OpenCells(new Vector2(CursorX, CursorY));
                 waitForUpdate = false;
+            }
+            else if (data.Contains("COORDS"))
+            {
+                coords[0] = data.Split()[1];
+                coords[1] = data.Split()[2];
+                waitForUpdate = false;
+            }
+            else if (data.Contains("FILL_TRAPS"))
+            {
+                data = data.Replace("FILL_TRAPS ", "");
+                string[] tokens = data.Split();
+
+                trapsCount = int.Parse(tokens[0]);
+
+                for (int i = 1; i < trapsCount * 2; i+=2)
+                    map[int.Parse(tokens[i]), int.Parse(tokens[i + 1])].isTrap = true;
             }
             else if (data.Contains("OPEN_CELLS"))
             {
@@ -811,27 +845,30 @@ namespace Minesweeper_Console.NET
                 for (int j = 0; j < mapSize.Y; j++)
                     map[i, j] = new Cell();
 
-            trapsCount = (int)(mapSize.X * mapSize.Y * 0.15);
+            trapsCount = (int)(mapSize.X * mapSize.Y * 0.05);
 
             if (host)
-            {
-                coords[0] = "";
-                for (int i = 0; i < mapSize.X; i++)
-                {
-                    int t = Random.Shared.Next(alphabet.Length);
-                    if (!coords[0].Contains(alphabet[t]))
-                        coords[0] += alphabet[t];
-                    else i--;
-                }
+                CreateCoords();
+        }
 
-                coords[1] = "";
-                for (int i = 0; i < mapSize.Y; i++)
-                {
-                    int t = Random.Shared.Next(alphabet.Length);
-                    if (!coords[1].Contains(alphabet[t]))
-                        coords[1] += alphabet[t];
-                    else i--;
-                }
+        private void CreateCoords()
+        {
+            coords[0] = "";
+            for (int i = 0; i < mapSize.X; i++)
+            {
+                int t = Random.Shared.Next(alphabet.Length);
+                if (!coords[0].Contains(alphabet[t]))
+                    coords[0] += alphabet[t];
+                else i--;
+            }
+
+            coords[1] = "";
+            for (int i = 0; i < mapSize.Y; i++)
+            {
+                int t = Random.Shared.Next(alphabet.Length);
+                if (!coords[1].Contains(alphabet[t]))
+                    coords[1] += alphabet[t];
+                else i--;
             }
         }
 
