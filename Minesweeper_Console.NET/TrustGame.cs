@@ -82,10 +82,17 @@ namespace Minesweeper_Console.NET
 
             Console.WriteLine("Waiting for the other player to get ready...");
 
+            System.Timers.Timer requestStartFlag = new System.Timers.Timer();
+            requestStartFlag.Interval = 400;
+            requestStartFlag.Elapsed += RequestStartFlag;
+            requestStartFlag.Start();
+
             while (!canStartFlag)
             {
                 ;
             }
+
+            requestStartFlag.Stop();
 
             GetMapInfo();
             Console.Clear();
@@ -137,10 +144,17 @@ namespace Minesweeper_Console.NET
 
             Console.WriteLine("Waiting for the host to get ready...");
 
+            System.Timers.Timer requestStartFlag = new System.Timers.Timer();
+            requestStartFlag.Interval = 400;
+            requestStartFlag.Elapsed += RequestStartFlag;
+            requestStartFlag.Start();
+
             while (!canStartFlag)
             {
                 ;
             }
+
+            requestStartFlag.Stop();
 
             Console.WriteLine("Waiting for the host to create a map...");
 
@@ -149,7 +163,7 @@ namespace Minesweeper_Console.NET
             requestMap.Elapsed += RequestMapData;
             requestMap.Start();
 
-            while (!canStartFlag)
+            while (!mapCreatedFlag)
             {
                 ;
             }
@@ -157,6 +171,11 @@ namespace Minesweeper_Console.NET
             requestMap.Stop();
 
             ManageGame();
+        }
+
+        private void RequestStartFlag(object? sender, ElapsedEventArgs e)
+        {
+            networkManager.SendData("REQUEST_STARTFLAG");
         }
 
         private void RequestMapData(object? sender, ElapsedEventArgs e)

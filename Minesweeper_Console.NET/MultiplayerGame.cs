@@ -73,10 +73,17 @@ namespace Minesweeper_Console.NET
 
             Console.WriteLine("Waiting for the other player to get ready...");
 
+            System.Timers.Timer requestStartFlag = new System.Timers.Timer();
+            requestStartFlag.Interval = 400;
+            requestStartFlag.Elapsed += RequestStartFlag;
+            requestStartFlag.Start();
+
             while (!canStartFlag)
             {
                 ;
             }
+
+            requestStartFlag.Stop();
 
             GetMapInfo();
             Console.Clear();
@@ -87,11 +94,6 @@ namespace Minesweeper_Console.NET
             CreateEnemyMap();
 
             ChooseFirstInput();
-        }
-
-        private void RequestMapData(object? sender, ElapsedEventArgs e)
-        {
-            networkManager.SendData("MAP_REQUEST");
         }
 
         private void ConnectToRoom()
@@ -131,26 +133,43 @@ namespace Minesweeper_Console.NET
 
             Console.WriteLine("Waiting for the host to get ready...");
 
-            System.Timers.Timer requestMap = new System.Timers.Timer();
-            requestMap.Interval = 500;
-            requestMap.Elapsed += RequestMapData;
-            requestMap.Start();
+            System.Timers.Timer requestStartFlag = new System.Timers.Timer();
+            requestStartFlag.Interval = 400;
+            requestStartFlag.Elapsed += RequestStartFlag;
+            requestStartFlag.Start();
 
             while (!canStartFlag)
             {
                 ;
             }
 
-            requestMap.Stop();
+            requestStartFlag.Stop();
 
             Console.WriteLine("Waiting for the host to create a map...");
+
+            System.Timers.Timer requestMap = new System.Timers.Timer();
+            requestMap.Interval = 500;
+            requestMap.Elapsed += RequestMapData;
+            requestMap.Start();
 
             while (!mapCreatedFlag)
             {
                 ;
             }
 
+            requestMap.Stop();
+
             ChooseFirstInput();
+        }
+
+        private void RequestStartFlag(object? sender, ElapsedEventArgs e)
+        {
+            networkManager.SendData("REQUEST_STARTFLAG");
+        }
+
+        private void RequestMapData(object? sender, ElapsedEventArgs e)
+        {
+            networkManager.SendData("REQUEST_MAP");
         }
 
         private void ChooseFirstInput()
@@ -553,6 +572,10 @@ namespace Minesweeper_Console.NET
             if (pos.X < mapSize.X - 1) OpenEnemyCells(new Vector2(pos.X + 1, pos.Y));
             if (pos.Y > 0) OpenEnemyCells(new Vector2(pos.X, pos.Y - 1));
             if (pos.Y < mapSize.Y - 1) OpenEnemyCells(new Vector2(pos.X, pos.Y + 1));
+            if (pos.X > 0 && pos.Y > 0) OpenEnemyCells(new Vector2(pos.X - 1, pos.Y - 1));
+            if (pos.X > 0 && pos.Y < mapSize.Y - 1) OpenEnemyCells(new Vector2(pos.X - 1, pos.Y + 1));
+            if (pos.X < mapSize.X - 1 && pos.Y > 0) OpenEnemyCells(new Vector2(pos.X + 1, pos.Y - 1));
+            if (pos.X < mapSize.X - 1 && pos.Y < mapSize.Y - 1) OpenEnemyCells(new Vector2(pos.X + 1, pos.Y + 1));
         }
 
         private int CalculateAdjascentMines(Vector2 pos)
@@ -698,9 +721,13 @@ namespace Minesweeper_Console.NET
 
                 mapCreatedFlag = true;
             }
-            else if (data.Contains("MAP_REQUEST"))
+            else if (data.Contains("REQUEST_MAP"))
             {
                 networkManager.SendData("CREATE_MAP " + mineCount + " " + (int)mapSize.X + " " + (int)mapSize.Y);
+            }
+            else if (data.Contains("REQUEST_STARTFLAG"))
+            {
+                networkManager.SendData("CAN_START");
             }
             else if (data.Contains("FILL_ENEMY_MAP"))
             {
