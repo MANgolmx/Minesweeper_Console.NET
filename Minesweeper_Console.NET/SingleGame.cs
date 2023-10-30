@@ -17,12 +17,13 @@ namespace Minesweeper_Console.NET
 
         private Vector2 cursorPosition;
 
-       // private bool[] cheats = new bool;
+        private bool[] cheats;
 
         public SingleGame()
         {
             cursorPosition = new Vector2(0, 0);
-
+            cheats = new bool[3];
+            cheats[0] = cheats[1] = cheats[2] = false;
         }
 
         private void ManageGame()
@@ -96,7 +97,7 @@ namespace Minesweeper_Console.NET
 
                     if (map[i, j].isOpened)
                     {
-                        if (map[i, j].isMine)
+                        if (map[i, j].isMine && !cheats[2])
                             Console.Write("*");
                         else
                         {
@@ -175,7 +176,10 @@ namespace Minesweeper_Console.NET
                         Console.Write("!");
                         continue;
                     }
-                    Console.Write(".");
+                    if (cheats[2] && map[i, j].isMine)
+                        Console.Write("*");
+                    else
+                        Console.Write(".");
                 }
                 Console.BackgroundColor = ConsoleColor.Black;
                 Console.ForegroundColor = ConsoleColor.White;
@@ -273,6 +277,10 @@ namespace Minesweeper_Console.NET
 
                 case ConsoleKey.Q:
                     map[(int)cursorPosition.X, (int)cursorPosition.Y].isUndefined = !map[(int)cursorPosition.X, (int)cursorPosition.Y].isUndefined;
+                    if (cheats[0] && cheats[1])
+                        cheats[2] = true;
+                    else
+                        cheats[0] = cheats[1] = cheats[2] = false;
                     break;
 
                 case ConsoleKey.Tab:
@@ -280,7 +288,12 @@ namespace Minesweeper_Console.NET
                     break;
 
                 case ConsoleKey.Oem4:
-                    //cheats[0] = true;
+                    cheats[0] = !cheats[0];
+                    break;
+
+                case ConsoleKey.E:
+                    if (cheats[0])
+                        cheats[1] = true;
                     break;
 
                 case ConsoleKey.Enter:
