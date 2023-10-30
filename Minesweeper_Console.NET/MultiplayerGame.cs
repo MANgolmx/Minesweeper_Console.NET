@@ -73,17 +73,10 @@ namespace Minesweeper_Console.NET
 
             Console.WriteLine("Waiting for the other player to get ready...");
 
-            System.Timers.Timer requestMap = new System.Timers.Timer();
-            requestMap.Interval = 500;
-            requestMap.Elapsed += RequestMapData;
-            requestMap.Start();
-
             while (!canStartFlag)
             {
                 ;
             }
-
-            requestMap.Stop();
 
             GetMapInfo();
             Console.Clear();
@@ -138,10 +131,17 @@ namespace Minesweeper_Console.NET
 
             Console.WriteLine("Waiting for the host to get ready...");
 
+            System.Timers.Timer requestMap = new System.Timers.Timer();
+            requestMap.Interval = 500;
+            requestMap.Elapsed += RequestMapData;
+            requestMap.Start();
+
             while (!canStartFlag)
             {
                 ;
             }
+
+            requestMap.Stop();
 
             Console.WriteLine("Waiting for the host to create a map...");
 
