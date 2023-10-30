@@ -180,7 +180,7 @@ namespace Minesweeper_Console.NET
 
         private void RequestMapData(object? sender, ElapsedEventArgs e)
         {
-            networkManager.SendData("MAP_REQUEST");
+            networkManager.SendData("REQUEST_MAP");
         }
 
         private void ChooseFirstInput()
@@ -818,9 +818,13 @@ namespace Minesweeper_Console.NET
                 for (int i = 1; i < trapsCount * 2; i+=2)
                     map[int.Parse(tokens[i]), int.Parse(tokens[i + 1])].isTrap = true;
             }
-            else if (data.Contains("MAP_REQUEST"))
+            else if (data.Contains("REQUEST_MAP"))
             {
                 networkManager.SendData("CREATE_MAP " + mineCount + " " + (int)mapSize.X + " " + (int)mapSize.Y);
+            }
+            else if (data.Contains("REQUEST_STARTFLAG"))
+            {
+                networkManager.SendData("CAN_START");
             }
             else if (data.Contains("OPEN_CELLS"))
             {
