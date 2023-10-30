@@ -17,9 +17,12 @@ namespace Minesweeper_Console.NET
 
         private Vector2 cursorPosition;
 
+       // private bool[] cheats = new bool;
+
         public SingleGame()
         {
             cursorPosition = new Vector2(0, 0);
+
         }
 
         private void ManageGame()
@@ -274,6 +277,10 @@ namespace Minesweeper_Console.NET
 
                 case ConsoleKey.Tab:
                     map[(int)cursorPosition.X, (int)cursorPosition.Y].isFlagged = !map[(int)cursorPosition.X, (int)cursorPosition.Y].isFlagged;
+                    break;
+
+                case ConsoleKey.Oem4:
+                    //cheats[0] = true;
                     break;
 
                 case ConsoleKey.Enter:

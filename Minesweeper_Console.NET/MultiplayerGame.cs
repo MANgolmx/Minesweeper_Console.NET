@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace Minesweeper_Console.NET
 {
@@ -72,10 +73,17 @@ namespace Minesweeper_Console.NET
 
             Console.WriteLine("Waiting for the other player to get ready...");
 
+            System.Timers.Timer requestMap = new System.Timers.Timer();
+            requestMap.Interval = 500;
+            requestMap.Elapsed += RequestMapData;
+            requestMap.Start();
+
             while (!canStartFlag)
             {
                 ;
             }
+
+            requestMap.Stop();
 
             GetMapInfo();
             Console.Clear();
@@ -86,6 +94,11 @@ namespace Minesweeper_Console.NET
             CreateEnemyMap();
 
             ChooseFirstInput();
+        }
+
+        private void RequestMapData(object? sender, ElapsedEventArgs e)
+        {
+            networkManager.SendData("MAP_REQUEST");
         }
 
         private void ConnectToRoom()
@@ -684,6 +697,10 @@ namespace Minesweeper_Console.NET
                 CreateEnemyMap();
 
                 mapCreatedFlag = true;
+            }
+            else if (data.Contains("MAP_REQUEST"))
+            {
+                networkManager.SendData("CREATE_MAP " + mineCount + " " + (int)mapSize.X + " " + (int)mapSize.Y);
             }
             else if (data.Contains("FILL_ENEMY_MAP"))
             {
