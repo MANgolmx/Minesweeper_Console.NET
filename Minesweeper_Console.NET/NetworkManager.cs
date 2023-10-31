@@ -43,7 +43,7 @@ namespace Minesweeper_Console.NET
             }
         }
 
-        public void StartReceivingData(MultiplayerGame session)
+        public void StartReceivingData(SurvivalGame session)
         {
             while (server.tcpClient.Connected)
             {

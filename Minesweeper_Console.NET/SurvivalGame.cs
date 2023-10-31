@@ -8,7 +8,7 @@ using System.Timers;
 
 namespace Minesweeper_Console.NET
 {
-    class MultiplayerGame
+    class SurvivalGame
     {
         private NetworkManager networkManager;
         private Thread dataReciever;
@@ -26,7 +26,7 @@ namespace Minesweeper_Console.NET
 
         private Vector2 cursorPosition;
 
-        public MultiplayerGame()
+        public SurvivalGame()
         {
             networkManager = new NetworkManager();
             cursorPosition = new Vector2(0, 0);

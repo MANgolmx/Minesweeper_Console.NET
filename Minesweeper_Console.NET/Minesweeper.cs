@@ -9,7 +9,7 @@ namespace Minesweeper_Console.NET
     class Minesweeper
     {
         SingleGame singleGame;
-        MultiplayerGame multiplayerGame;
+        SurvivalGame multiplayerGame;
         TrustGame trustGame;
 
         public Minesweeper()
@@ -64,7 +64,7 @@ namespace Minesweeper_Console.NET
                     singleGame.StartGame();
                     break;
                 case 1:
-                    multiplayerGame = new MultiplayerGame();
+                    multiplayerGame = new SurvivalGame();
                     multiplayerGame.StartGame();
                     break;
                 case 2:
