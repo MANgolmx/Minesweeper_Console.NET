@@ -237,8 +237,11 @@ namespace Minesweeper_Console.NET
                 for (int m = 0; m < 2; m++)
                 {
                     if (i == 0)
+                    {
                         for (int k = 0; k < mapSize.X || k < playerNames[m].Length; i++)
                             Console.Write(playerNames[m][k]);
+                        Console.Write("\n");
+                    }
                     for (int j = 0; j < mapSize.Y; j++)
                     {
                         if (m == 0)
