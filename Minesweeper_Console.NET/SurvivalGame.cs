@@ -716,6 +716,14 @@ namespace Minesweeper_Console.NET
 
         public void HandleRecievedData(string data)
         {
+            if (data.ToUpper().Contains("CAN_START"))
+            {
+                canStartFlag = true;
+                playerNames[1] = data.Split('&')[1];
+            }
+
+            data = data.ToUpper();
+
             if (data.Contains("HEXCLIENTIP"))
             {
                 data = data.Replace("HEXCLIENTIP ", "");
@@ -723,11 +731,6 @@ namespace Minesweeper_Console.NET
                 networkManager.clients[0].TryConnecting();
 
                 networkManager.readyToPlay = true;
-            }
-            else if (data.Contains("CAN_START"))
-            {
-                canStartFlag = true;
-                playerNames[1] = data.Split('&')[1];
             }
             else if (data.Contains("CREATE_MAP"))
             {

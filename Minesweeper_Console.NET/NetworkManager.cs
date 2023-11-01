@@ -94,9 +94,8 @@ namespace Minesweeper_Console.NET
                     byte[] buffer = new byte[server.tcpClient.ReceiveBufferSize];
                     int bytesRead = nwStream.Read(buffer, 0, server.tcpClient.ReceiveBufferSize);
                     string dataReceived = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-                    dataReceived = dataReceived.ToUpper();
 
-                    if (dataReceived == "END")
+                    if (dataReceived.ToUpper() == "END")
                         session.AbortRecieverThread();
                     else session.HandleRecievedData(dataReceived);
                 }
@@ -122,9 +121,8 @@ namespace Minesweeper_Console.NET
                     byte[] buffer = new byte[server.tcpClient.ReceiveBufferSize];
                     int bytesRead = nwStream.Read(buffer, 0, server.tcpClient.ReceiveBufferSize);
                     string dataReceived = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-                    dataReceived = dataReceived.ToUpper();
 
-                    if (dataReceived == "END")
+                    if (dataReceived.ToUpper() == "END")
                         session.AbortRecieverThread();
                     else session.HandleRecievedData(dataReceived);
                 } catch(Exception ex)

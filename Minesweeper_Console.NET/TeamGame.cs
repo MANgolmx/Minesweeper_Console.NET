@@ -716,15 +716,7 @@ namespace Minesweeper_Console.NET
 
         public void HandleRecievedData(string data)
         {
-            if (data.Contains("HEXCLIENTIP"))
-            {
-                data = data.Replace("HEXCLIENTIP ", "");
-                networkManager.SetClientHexIP(data);
-                networkManager.TryClientConnecting();
-
-                networkManager.readyToPlay = true;
-            }
-            else if (data.Contains("CAN_START"))
+            if (data.ToUpper().Contains("CAN_START"))
             {
                 if (canStartFlag[0])
                     if (canStartFlag[1])
@@ -733,6 +725,17 @@ namespace Minesweeper_Console.NET
                         canStartFlag[1] = true;
                 else
                     canStartFlag[0] = true;
+            }
+
+            data = data.ToUpper();
+
+            if (data.Contains("HEXCLIENTIP"))
+            {
+                data = data.Replace("HEXCLIENTIP ", "");
+                networkManager.SetClientHexIP(data);
+                networkManager.TryClientConnecting();
+
+                networkManager.readyToPlay = true;
             }
             else if (data.Contains("CREATE_MAP"))
             {
