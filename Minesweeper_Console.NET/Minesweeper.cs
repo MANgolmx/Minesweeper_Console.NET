@@ -8,15 +8,20 @@ namespace Minesweeper_Console.NET
 {
     class Minesweeper
     {
+        string playerName;
+
         SingleGame singleGame;
         SurvivalGame multiplayerGame;
         TrustGame trustGame;
+        TeamGame teamGame;
 
         public Minesweeper()
         {
             //singleGame = new SingleGame();
             //multiplayerGame = new MultiplayerGame();
             //trustGame = new TrustGame();
+
+            playerName = "Elena Abovyan #" + Random.Shared.Next(100);
         }
 
         private int MainMenu()
@@ -34,6 +39,12 @@ namespace Minesweeper_Console.NET
                 if (choice == 2)
                     Console.Write("---> ");
                 Console.Write("Play with friend\n");
+                if (choice == 3)
+                    Console.Write("---> ");
+                Console.Write("2v2 game\n");
+                if (choice == 4)
+                    Console.Write("---> ");
+                Console.Write("Name: " + playerName + "\n");
 
                 ConsoleKeyInfo pressedKey = Console.ReadKey();
                 switch(pressedKey.Key)
@@ -41,7 +52,7 @@ namespace Minesweeper_Console.NET
                     case ConsoleKey.Enter:
                         return choice;
                     case ConsoleKey.DownArrow:
-                        if (choice < 2)
+                        if (choice < 3)
                             choice++;
                         break;
                     case ConsoleKey.UpArrow:
@@ -57,23 +68,38 @@ namespace Minesweeper_Console.NET
 
         public void Start()
         {
-            switch(MainMenu())
+            bool isStarted = true;
+            while (isStarted)
             {
-                case 0:
-                    singleGame = new SingleGame();
-                    singleGame.StartGame();
-                    break;
-                case 1:
-                    multiplayerGame = new SurvivalGame();
-                    multiplayerGame.StartGame();
-                    break;
-                case 2:
-                    trustGame = new TrustGame();
-                    trustGame.StartGame();
-                    break;
+                switch (MainMenu())
+                {
+                    case 0:
+                        singleGame = new SingleGame();
+                        singleGame.StartGame();
+                        isStarted = false;
+                        break;
+                    case 1:
+                        multiplayerGame = new SurvivalGame(playerName);
+                        multiplayerGame.StartGame();
+                        isStarted = false;
+                        break;
+                    case 2:
+                        trustGame = new TrustGame();
+                        trustGame.StartGame();
+                        isStarted = false;
+                        break;
+                    case 3:
+                        teamGame = new TeamGame(playerName);
+                        teamGame.StartGame();
+                        isStarted = false;
+                        break;
+                    case 4:
+                        Console.Write("\n Input your new name: ");
+                        playerName = Console.ReadLine();
+                        break;
 
+                }
             }
-
         }
 
     }

@@ -23,6 +23,8 @@ namespace Minesweeper_Console.NET
         private bool isPlaying = true;
         private bool waitForUpdate = true;
 
+        private bool waitingForInput = false;
+
         private int trapsCount;
 
         private Vector2 mapSize;
@@ -76,7 +78,9 @@ namespace Minesweeper_Console.NET
             }
 
             Console.WriteLine("Player connected! Press any key when ready!");
+            waitingForInput = true;
             Console.ReadKey();
+            waitingForInput = false;
 
             networkManager.SendData("CAN_START");
 
@@ -119,7 +123,7 @@ namespace Minesweeper_Console.NET
 
                 try
                 {
-                    networkManager.client.SetClientIP(hexCode);
+                    networkManager.clients[0].SetClientIP(hexCode);
                     isViable = true;
                 }
                 catch
@@ -129,7 +133,7 @@ namespace Minesweeper_Console.NET
                 }
             } while (!isViable);
 
-            networkManager.client.TryConnecting();
+            networkManager.clients[0].TryConnecting();
 
             networkManager.SendData("HEXCLIENTIP " + networkManager.server.GetHexIPAddress());
             networkManager.server.StartListening();
@@ -138,7 +142,9 @@ namespace Minesweeper_Console.NET
             dataReciever.Start();
 
             Console.WriteLine("Connected to room! Press any key when ready!");
+            waitingForInput = true;
             Console.ReadKey();
+            waitingForInput = false;
 
             networkManager.SendData("CAN_START");
 
@@ -749,8 +755,8 @@ namespace Minesweeper_Console.NET
             if (data.Contains("HEXCLIENTIP"))
             {
                 data = data.Replace("HEXCLIENTIP ", "");
-                networkManager.client.SetClientIP(data);
-                networkManager.client.TryConnecting();
+                networkManager.clients[0].SetClientIP(data);
+                networkManager.clients[0].TryConnecting();
 
                 networkManager.readyToPlay = true;
             }
@@ -824,7 +830,8 @@ namespace Minesweeper_Console.NET
             }
             else if (data.Contains("REQUEST_STARTFLAG"))
             {
-                networkManager.SendData("CAN_START");
+                if (!waitingForInput)
+                    networkManager.SendData("CAN_START");
             }
             else if (data.Contains("OPEN_CELLS"))
             {

@@ -8,14 +8,14 @@ using System.Timers;
 
 namespace Minesweeper_Console.NET
 {
-    class SurvivalGame
+    class TeamGame
     {
-        string[] playerNames = new string[2];
+        string[] playerNames = new string[4];
 
         private NetworkManager networkManager;
         private Thread dataReciever;
 
-        private bool canStartFlag = false;
+        private bool[] canStartFlag = new bool[3];
         private bool mapCreatedFlag = false;
 
         private bool waitingForInput = false;
@@ -26,14 +26,17 @@ namespace Minesweeper_Console.NET
         private Vector2 mapSize;
         private int mineCount;
         private Cell[,] map;
-        private Cell[,] mapEnemy;
+        private Cell[,,] mapEnemy;
 
         private Vector2 cursorPosition;
 
-        public SurvivalGame(string playerName)
+        public TeamGame(string playerName)
         {
             networkManager = new NetworkManager();
             cursorPosition = new Vector2(0, 0);
+
+            for (int i = 0; i < 3; i++)
+                canStartFlag[i] = false;
 
             playerNames[0] = playerName;
         }
@@ -77,7 +80,7 @@ namespace Minesweeper_Console.NET
             Console.ReadKey();
             waitingForInput = false;
 
-            networkManager.SendData("CAN_START&" + playerNames[0]);
+            networkManager.SendData("CAN_START", 3);
 
             Console.WriteLine("Waiting for the other player to get ready...");
 
@@ -86,7 +89,7 @@ namespace Minesweeper_Console.NET
             requestStartFlag.Elapsed += RequestStartFlag;
             requestStartFlag.Start();
 
-            while (!canStartFlag)
+            while (!canStartFlag[2])
             {
                 ;
             }
@@ -96,10 +99,10 @@ namespace Minesweeper_Console.NET
             GetMapInfo();
             Console.Clear();
 
-            networkManager.SendData("CREATE_MAP " + mineCount + " " + (int)mapSize.X + " " + (int)mapSize.Y);
+            networkManager.SendData("CREATE_MAP " + mineCount + " " + (int)mapSize.X + " " + (int)mapSize.Y, 3);
 
             CreateMap();
-            CreateEnemyMap();
+            CreateEnemyMaps();
 
             ChooseFirstInput();
         }
@@ -117,10 +120,13 @@ namespace Minesweeper_Console.NET
                 hexCode = hexCode.Trim();
                 hexCode = hexCode.ToUpper();
 
-                try {
-                    networkManager.clients[0].SetClientIP(hexCode);
+                try
+                {
+                    networkManager.SetClientHexIP(hexCode);
                     isViable = true;
-                } catch { 
+                }
+                catch
+                {
                     Console.WriteLine("Wrong room code!");
                     Console.ReadKey();
                 }
@@ -128,7 +134,7 @@ namespace Minesweeper_Console.NET
 
             networkManager.clients[0].TryConnecting();
 
-            networkManager.SendData("HEXCLIENTIP " + networkManager.server.GetHexIPAddress());
+            networkManager.SendData("HEXCLIENTIP " + networkManager.server.GetHexIPAddress(), 3);
             networkManager.server.StartListening();
 
             dataReciever = new Thread(() => networkManager.StartReceivingData(this));
@@ -139,7 +145,7 @@ namespace Minesweeper_Console.NET
             Console.ReadKey();
             waitingForInput = false;
 
-            networkManager.SendData("CAN_START&" + playerNames[0]);
+            networkManager.SendData("CAN_START", 3);
 
             Console.WriteLine("Waiting for the host to get ready...");
 
@@ -148,14 +154,14 @@ namespace Minesweeper_Console.NET
             requestStartFlag.Elapsed += RequestStartFlag;
             requestStartFlag.Start();
 
-            while (!canStartFlag)
+            while (!canStartFlag[2])
             {
                 ;
             }
 
             requestStartFlag.Stop();
 
-            Console.WriteLine("Waiting for " + playerNames[1] + " to create a map...");
+            Console.WriteLine("Waiting for the host to create a map...");
 
             System.Timers.Timer requestMap = new System.Timers.Timer();
             requestMap.Interval = 500;
@@ -174,12 +180,12 @@ namespace Minesweeper_Console.NET
 
         private void RequestStartFlag(object? sender, ElapsedEventArgs e)
         {
-            networkManager.SendData("REQUEST_STARTFLAG");
+            networkManager.SendData("REQUEST_STARTFLAG", 3);
         }
 
         private void RequestMapData(object? sender, ElapsedEventArgs e)
         {
-            networkManager.SendData("REQUEST_MAP");
+            networkManager.SendData("REQUEST_MAP", 3);
         }
 
         private void ChooseFirstInput()
@@ -231,14 +237,10 @@ namespace Minesweeper_Console.NET
 
         private void PrintMaps()
         {
-            
             for (int i = 0; i < mapSize.X; i++)
             {
                 for (int m = 0; m < 2; m++)
                 {
-                    if (i == 0)
-                        for (int k = 0; k < mapSize.X || k < playerNames[m].Length; i++)
-                            Console.Write(playerNames[m][k]);
                     for (int j = 0; j < mapSize.Y; j++)
                     {
                         if (m == 0)
@@ -338,13 +340,13 @@ namespace Minesweeper_Console.NET
                         {
                             Console.BackgroundColor = ConsoleColor.Black;
                             Console.ForegroundColor = ConsoleColor.White;
-                            if (mapEnemy[i, j].isOpened)
+                            if (mapEnemy[0, i, j].isOpened)
                             {
-                                if (mapEnemy[i, j].isMine)
+                                if (mapEnemy[0, i, j].isMine)
                                     Console.Write("*");
                                 else
                                 {
-                                    switch (CalculateAdjascentEnemyMines(new Vector2(i, j)))
+                                    switch (0)//CalculateAdjascentEnemyMines(new Vector2(i, j)))
                                     {
                                         case 1:
                                             Console.BackgroundColor = ConsoleColor.Black;
@@ -393,12 +395,12 @@ namespace Minesweeper_Console.NET
                                 }
                                 continue;
                             }
-                            if (mapEnemy[i, j].isUndefined)
+                            if (mapEnemy[0, i, j].isUndefined)
                             {
                                 Console.Write("?");
                                 continue;
                             }
-                            if (mapEnemy[i, j].isFlagged)
+                            if (mapEnemy[0, i, j].isFlagged)
                             {
                                 Console.Write("!");
                                 continue;
@@ -419,7 +421,8 @@ namespace Minesweeper_Console.NET
                 for (int i = 0; i < mapSize.Y + 5; i++)
                     Console.Write(" ");
                 Console.Write("Player Won!");
-            } else if (enemyLost)
+            }
+            else if (enemyLost)
             {
                 for (int i = 0; i < mapSize.Y + 5; i++)
                     Console.Write(" ");
@@ -490,12 +493,12 @@ namespace Minesweeper_Console.NET
                         if (!map[(int)cursorPosition.X, (int)cursorPosition.Y].isMine && CalculateAdjascentMines(cursorPosition) == 0)
                         {
                             OpenCells(cursorPosition);
-                            networkManager.SendData("OPEN_ENEMY_CELLS " + (int)cursorPosition.X + " " + (int)cursorPosition.Y);
+                            networkManager.SendData("OPEN_ENEMY_CELLS " + (int)cursorPosition.X + " " + (int)cursorPosition.Y, 3);
                         }
                         else
                         {
                             map[(int)cursorPosition.X, (int)cursorPosition.Y].isOpened = true;
-                            networkManager.SendData("OPEN_ENEMY_CELLS " + (int)cursorPosition.X + " " + (int)cursorPosition.Y);
+                            networkManager.SendData("OPEN_ENEMY_CELLS " + (int)cursorPosition.X + " " + (int)cursorPosition.Y, 3);
                             if (map[(int)cursorPosition.X, (int)cursorPosition.Y].isMine)
                                 return 1;
                         }
@@ -537,7 +540,7 @@ namespace Minesweeper_Console.NET
 
             OpenCells(cursorPosition);
 
-            networkManager.SendData(minesData);
+            networkManager.SendData(minesData, 3);
         }
 
         private void OpenCells(Vector2 pos)
@@ -566,30 +569,30 @@ namespace Minesweeper_Console.NET
             if (pos.X < mapSize.X - 1 && pos.Y < mapSize.Y - 1) OpenCells(new Vector2(pos.X + 1, pos.Y + 1));
         }
 
-        private void OpenEnemyCells(Vector2 pos)
+        private void OpenEnemyCells(Vector2 pos, int mapInd)
         {
-            if (mapEnemy[(int)pos.X, (int)pos.Y].isMine)
+            if (mapEnemy[mapInd, (int)pos.X, (int)pos.Y].isMine)
                 return;
 
-            if (mapEnemy[(int)pos.X, (int)pos.Y].isOpened)
+            if (mapEnemy[mapInd, (int)pos.X, (int)pos.Y].isOpened)
                 return;
 
-            if (CalculateAdjascentEnemyMines(pos) > 0)
+            if (true)//CalculateAdjascentEnemyMines(pos) > 0)
             {
-                mapEnemy[(int)pos.X, (int)pos.Y].isOpened = true;
+                mapEnemy[mapInd, (int)pos.X, (int)pos.Y].isOpened = true;
                 return;
             }
             else
-                mapEnemy[(int)pos.X, (int)pos.Y].isOpened = true;
+                mapEnemy[mapInd, (int)pos.X, (int)pos.Y].isOpened = true;
 
-            if (pos.X > 0) OpenEnemyCells(new Vector2(pos.X - 1, pos.Y));
-            if (pos.X < mapSize.X - 1) OpenEnemyCells(new Vector2(pos.X + 1, pos.Y));
-            if (pos.Y > 0) OpenEnemyCells(new Vector2(pos.X, pos.Y - 1));
-            if (pos.Y < mapSize.Y - 1) OpenEnemyCells(new Vector2(pos.X, pos.Y + 1));
-            if (pos.X > 0 && pos.Y > 0) OpenEnemyCells(new Vector2(pos.X - 1, pos.Y - 1));
-            if (pos.X > 0 && pos.Y < mapSize.Y - 1) OpenEnemyCells(new Vector2(pos.X - 1, pos.Y + 1));
-            if (pos.X < mapSize.X - 1 && pos.Y > 0) OpenEnemyCells(new Vector2(pos.X + 1, pos.Y - 1));
-            if (pos.X < mapSize.X - 1 && pos.Y < mapSize.Y - 1) OpenEnemyCells(new Vector2(pos.X + 1, pos.Y + 1));
+            if (pos.X > 0) OpenEnemyCells(new Vector2(pos.X - 1, pos.Y), mapInd);
+            if (pos.X < mapSize.X - 1) OpenEnemyCells(new Vector2(pos.X + 1, pos.Y), mapInd);
+            if (pos.Y > 0) OpenEnemyCells(new Vector2(pos.X, pos.Y - 1), mapInd);
+            if (pos.Y < mapSize.Y - 1) OpenEnemyCells(new Vector2(pos.X, pos.Y + 1), mapInd);
+            if (pos.X > 0 && pos.Y > 0) OpenEnemyCells(new Vector2(pos.X - 1, pos.Y - 1), mapInd);
+            if (pos.X > 0 && pos.Y < mapSize.Y - 1) OpenEnemyCells(new Vector2(pos.X - 1, pos.Y + 1), mapInd);
+            if (pos.X < mapSize.X - 1 && pos.Y > 0) OpenEnemyCells(new Vector2(pos.X + 1, pos.Y - 1), mapInd);
+            if (pos.X < mapSize.X - 1 && pos.Y < mapSize.Y - 1) OpenEnemyCells(new Vector2(pos.X + 1, pos.Y + 1), mapInd);
         }
 
         private int CalculateAdjascentMines(Vector2 pos)
@@ -608,18 +611,18 @@ namespace Minesweeper_Console.NET
             return mines;
         }
 
-        private int CalculateAdjascentEnemyMines(Vector2 pos)
+        private int CalculateAdjascentEnemyMines(Vector2 pos, int mapInd)
         {
             int mines = 0;
 
-            if (pos.X > 0 && mapEnemy[(int)pos.X - 1, (int)pos.Y].isMine) mines++;
-            if (pos.X > 0 && pos.Y > 0 && mapEnemy[(int)pos.X - 1, (int)pos.Y - 1].isMine) mines++;
-            if (pos.X > 0 && pos.Y < mapSize.Y - 1 && mapEnemy[(int)pos.X - 1, (int)pos.Y + 1].isMine) mines++;
-            if (pos.Y > 0 && mapEnemy[(int)pos.X, (int)pos.Y - 1].isMine) mines++;
-            if (pos.X < mapSize.X - 1 && mapEnemy[(int)pos.X + 1, (int)pos.Y].isMine) mines++;
-            if (pos.Y < mapSize.Y - 1 && mapEnemy[(int)pos.X, (int)pos.Y + 1].isMine) mines++;
-            if (pos.X < mapSize.X - 1 && pos.Y < mapSize.Y - 1 && mapEnemy[(int)pos.X + 1, (int)pos.Y + 1].isMine) mines++;
-            if (pos.X < mapSize.X - 1 && pos.Y > 0 && mapEnemy[(int)pos.X + 1, (int)pos.Y - 1].isMine) mines++;
+            if (pos.X > 0 && mapEnemy[mapInd, (int)pos.X - 1, (int)pos.Y].isMine) mines++;
+            if (pos.X > 0 && pos.Y > 0 && mapEnemy[mapInd, (int)pos.X - 1, (int)pos.Y - 1].isMine) mines++;
+            if (pos.X > 0 && pos.Y < mapSize.Y - 1 && mapEnemy[mapInd, (int)pos.X - 1, (int)pos.Y + 1].isMine) mines++;
+            if (pos.Y > 0 && mapEnemy[mapInd, (int)pos.X, (int)pos.Y - 1].isMine) mines++;
+            if (pos.X < mapSize.X - 1 && mapEnemy[mapInd, (int)pos.X + 1, (int)pos.Y].isMine) mines++;
+            if (pos.Y < mapSize.Y - 1 && mapEnemy[mapInd, (int)pos.X, (int)pos.Y + 1].isMine) mines++;
+            if (pos.X < mapSize.X - 1 && pos.Y < mapSize.Y - 1 && mapEnemy[mapInd, (int)pos.X + 1, (int)pos.Y + 1].isMine) mines++;
+            if (pos.X < mapSize.X - 1 && pos.Y > 0 && mapEnemy[mapInd, (int)pos.X + 1, (int)pos.Y - 1].isMine) mines++;
 
             return mines;
         }
@@ -716,15 +719,20 @@ namespace Minesweeper_Console.NET
             if (data.Contains("HEXCLIENTIP"))
             {
                 data = data.Replace("HEXCLIENTIP ", "");
-                networkManager.clients[0].SetClientIP(data);
-                networkManager.clients[0].TryConnecting();
+                networkManager.SetClientHexIP(data);
+                networkManager.TryClientConnecting();
 
                 networkManager.readyToPlay = true;
             }
             else if (data.Contains("CAN_START"))
             {
-                canStartFlag = true;
-                playerNames[1] = data.Split('&')[1];
+                if (canStartFlag[0])
+                    if (canStartFlag[1])
+                        canStartFlag[2] = true;
+                    else
+                        canStartFlag[1] = true;
+                else
+                    canStartFlag[0] = true;
             }
             else if (data.Contains("CREATE_MAP"))
             {
@@ -734,18 +742,18 @@ namespace Minesweeper_Console.NET
                 mapSize = new Vector2(int.Parse(data.Split()[1]), int.Parse(data.Split()[2]));
 
                 CreateMap();
-                CreateEnemyMap();
+                CreateEnemyMaps();
 
                 mapCreatedFlag = true;
             }
             else if (data.Contains("REQUEST_MAP"))
             {
-                networkManager.SendData("CREATE_MAP " + mineCount + " " + (int)mapSize.X + " " + (int)mapSize.Y);
+                networkManager.SendData("CREATE_MAP " + mineCount + " " + (int)mapSize.X + " " + (int)mapSize.Y, 3);
             }
             else if (data.Contains("REQUEST_STARTFLAG"))
             {
                 if (!waitingForInput)
-                    networkManager.SendData("CAN_START " + playerNames[0]);
+                    networkManager.SendData("CAN_START", 3);
             }
             else if (data.Contains("FILL_ENEMY_MAP"))
             {
@@ -756,18 +764,20 @@ namespace Minesweeper_Console.NET
 
                 string[] tokens = data.Split();
 
-                enemyCursorX = int.Parse(tokens[0]);
-                enemyCursorY = int.Parse(tokens[1]);
+                enemyCursorX = int.Parse(tokens[1]);
+                enemyCursorY = int.Parse(tokens[2]);
 
-                for (int i = 2; i < mineCount * 2; i += 2)
-                    mapEnemy[int.Parse(tokens[i]), int.Parse(tokens[i + 1])].isMine = true;
+                int mapInd = int.Parse(tokens[0]);
 
-                OpenEnemyCells(new Vector2(enemyCursorX, enemyCursorY));
+                for (int i = 3; i < mineCount * 2 + 1; i += 2)
+                    mapEnemy[mapInd, int.Parse(tokens[i]), int.Parse(tokens[i + 1])].isMine = true;
+
+                OpenEnemyCells(new Vector2(enemyCursorX, enemyCursorY), mapInd);
             }
             else if (data.Contains("OPEN_ENEMY_CELLS"))
             {
                 string[] tokens = data.Split();
-                OpenEnemyCells(new Vector2(int.Parse(tokens[1]), int.Parse(tokens[2])));
+                OpenEnemyCells(new Vector2( int.Parse(tokens[2]), int.Parse(tokens[3])), int.Parse(tokens[1]));
             }
             else if (data.Contains("ENEMY_WON"))
                 enemyWon = true;
@@ -784,13 +794,16 @@ namespace Minesweeper_Console.NET
                     map[i, j] = new Cell();
         }
 
-        private void CreateEnemyMap()
+        private void CreateEnemyMaps()
         {
-            mapEnemy = new Cell[(int)mapSize.X, (int)mapSize.Y];
+            for (int ind = 0; ind < 3; ind++)
+            {
+                mapEnemy = new Cell[ind, (int)mapSize.X, (int)mapSize.Y];
 
-            for (int i = 0; i < mapSize.X; i++)
-                for (int j = 0; j < mapSize.Y; j++)
-                    mapEnemy[i, j] = new Cell();
+                for (int i = 0; i < mapSize.X; i++)
+                    for (int j = 0; j < mapSize.Y; j++)
+                        mapEnemy[ind, i, j] = new Cell();
+            }
         }
 
         public void AbortRecieverThread()
@@ -812,7 +825,7 @@ namespace Minesweeper_Console.NET
                     Console.Write("---> ");
                 Console.Write("Connect to a room\n");
 
-                Console.Write("\nRules: You compete with the other player on the map with the same mines count.\n");
+                Console.Write("\nRules: You and your teammate have to open your maps faster than your opennents\n");
 
                 ConsoleKeyInfo pressedKey = Console.ReadKey();
                 switch (pressedKey.Key)
@@ -832,6 +845,5 @@ namespace Minesweeper_Console.NET
                 }
             }
         }
-
     }
 }
