@@ -96,8 +96,10 @@ namespace Minesweeper_Console.NET
 
             requestStartFlag.Stop();
 
+            waitingForInput = true;
             GetMapInfo();
             Console.Clear();
+            waitingForInput = false;
 
             networkManager.SendData("CREATE_MAP " + mineCount + " " + (int)mapSize.X + " " + (int)mapSize.Y, 3);
 
@@ -751,7 +753,8 @@ namespace Minesweeper_Console.NET
             }
             else if (data.Contains("REQUEST_MAP"))
             {
-                networkManager.SendData("CREATE_MAP " + mineCount + " " + (int)mapSize.X + " " + (int)mapSize.Y, 3);
+                if (!waitingForInput)
+                    networkManager.SendData("CREATE_MAP " + mineCount + " " + (int)mapSize.X + " " + (int)mapSize.Y, 3);
             }
             else if (data.Contains("REQUEST_STARTFLAG"))
             {

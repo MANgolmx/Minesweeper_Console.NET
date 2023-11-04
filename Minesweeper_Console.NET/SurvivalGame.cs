@@ -51,7 +51,6 @@ namespace Minesweeper_Console.NET
                 case -1:
                     return;
             }
-
         }
 
         private void CreateRoom()
@@ -92,9 +91,10 @@ namespace Minesweeper_Console.NET
             }
 
             requestStartFlag.Stop();
-
+            waitingForInput = true;
             GetMapInfo();
             Console.Clear();
+            waitingForInput = false;
 
             networkManager.SendData("CREATE_MAP " + mineCount + " " + (int)mapSize.X + " " + (int)mapSize.Y);
 
@@ -752,7 +752,8 @@ namespace Minesweeper_Console.NET
             }
             else if (data.Contains("REQUEST_MAP"))
             {
-                networkManager.SendData("CREATE_MAP " + mineCount + " " + (int)mapSize.X + " " + (int)mapSize.Y);
+                if (!waitingForInput)
+                    networkManager.SendData("CREATE_MAP " + mineCount + " " + (int)mapSize.X + " " + (int)mapSize.Y);
             }
             else if (data.Contains("REQUEST_STARTFLAG"))
             {
