@@ -731,8 +731,8 @@ namespace Minesweeper_Console.NET
                 Console.Write("Connect to a room\n");
 
                 Console.Write("\nRules: Host sees map with coordinates and can move the cursor around the board. The other player sees full map but right side up. " +
-                    "He has to coordinate player around obstacle to win the game. Every 6th move of the host, second player can see his cursor. Traps could spawn on the map, " +
-                    "which only the second player can see. If the host steps on one of the traps, coordinates get rerandomized and map of the second player rotates");
+                    "He has to coordinate player around obstacle to win the game. Traps could spawn on the map, " +
+                    "which only the second player can see. If the host steps on one of the traps, coordinates get rerandomized");
 
                 ConsoleKeyInfo pressedKey = Console.ReadKey();
                 switch (pressedKey.Key)

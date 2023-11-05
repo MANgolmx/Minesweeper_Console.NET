@@ -39,10 +39,10 @@ namespace Minesweeper_Console.NET
                 if (choice == 2)
                     Console.Write("---> ");
                 Console.Write("Play with friend\n");
+                //if (choice == 3)
+                //    Console.Write("---> ");
+                //Console.Write("2v2 game\n");
                 if (choice == 3)
-                    Console.Write("---> ");
-                Console.Write("2v2 game\n");
-                if (choice == 4)
                     Console.Write("---> ");
                 Console.Write("Name: " + playerName + "\n");
 
@@ -88,12 +88,12 @@ namespace Minesweeper_Console.NET
                         trustGame.StartGame();
                         isStarted = false;
                         break;
+                    //case 3:
+                    //    teamGame = new TeamGame(playerName);
+                    //    teamGame.StartGame();
+                    //    isStarted = false;
+                    //    break;
                     case 3:
-                        teamGame = new TeamGame(playerName);
-                        teamGame.StartGame();
-                        isStarted = false;
-                        break;
-                    case 4:
                         Console.Write("\n Input your new name: ");
                         playerName = Console.ReadLine();
                         break;
