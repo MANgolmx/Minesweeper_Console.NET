@@ -487,6 +487,8 @@ namespace Minesweeper_Console.NET
                                         {
                                             Console.BackgroundColor = ConsoleColor.Black;
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                            if (cursorPosition.X == i && cursorPosition.Y == j)
+                                                Console.BackgroundColor = ConsoleColor.Gray;
                                             Console.Write(t);
                                         }
                                         break;
@@ -499,6 +501,8 @@ namespace Minesweeper_Console.NET
                                         {
                                             Console.BackgroundColor = ConsoleColor.Black;
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                            if (cursorPosition.X == i && cursorPosition.Y == j)
+                                                Console.BackgroundColor = ConsoleColor.Gray;
                                             Console.Write(t);
                                         }
                                         break;
@@ -511,6 +515,8 @@ namespace Minesweeper_Console.NET
                                         {
                                             Console.BackgroundColor = ConsoleColor.Black;
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                            if (cursorPosition.X == i && cursorPosition.Y == j)
+                                                Console.BackgroundColor = ConsoleColor.Gray;
                                             Console.Write(t);
                                         }
                                         break;
@@ -523,6 +529,8 @@ namespace Minesweeper_Console.NET
                                         {
                                             Console.BackgroundColor = ConsoleColor.Black;
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                            if (cursorPosition.X == i && cursorPosition.Y == j)
+                                                Console.BackgroundColor = ConsoleColor.Gray;
                                             Console.Write(t);
                                         }
                                         break;
@@ -535,6 +543,8 @@ namespace Minesweeper_Console.NET
                                         {
                                             Console.BackgroundColor = ConsoleColor.Black;
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                            if (cursorPosition.X == i && cursorPosition.Y == j)
+                                                Console.BackgroundColor = ConsoleColor.Gray;
                                             Console.Write(t);
                                         }
                                         break;
@@ -547,6 +557,8 @@ namespace Minesweeper_Console.NET
                                         {
                                             Console.BackgroundColor = ConsoleColor.Black;
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                            if (cursorPosition.X == i && cursorPosition.Y == j)
+                                                Console.BackgroundColor = ConsoleColor.Gray;
                                             Console.Write(t);
                                         }
                                         break;
@@ -559,6 +571,8 @@ namespace Minesweeper_Console.NET
                                         {
                                             Console.BackgroundColor = ConsoleColor.Black;
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                            if (cursorPosition.X == i && cursorPosition.Y == j)
+                                                Console.BackgroundColor = ConsoleColor.Gray;
                                             Console.Write(t);
                                         }
                                         break;
@@ -571,6 +585,8 @@ namespace Minesweeper_Console.NET
                                         {
                                             Console.BackgroundColor = ConsoleColor.Black;
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                            if (cursorPosition.X == i && cursorPosition.Y == j)
+                                                Console.BackgroundColor = ConsoleColor.Gray;
                                             Console.Write(t);
                                         }
                                         break;
@@ -582,6 +598,8 @@ namespace Minesweeper_Console.NET
                                         {
                                             Console.BackgroundColor = ConsoleColor.Black;
                                             Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(16);
+                                            if (cursorPosition.X == i && cursorPosition.Y == j)
+                                                Console.BackgroundColor = ConsoleColor.Gray;
                                             Console.Write(Random.Shared.Next(10));
                                         }
                                         else if (t < 3)
